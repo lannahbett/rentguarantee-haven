@@ -1,5 +1,5 @@
 
-@layer utilities {
+/* Utility styles */
   /* Theme text colors using CSS variables */
   .theme-primary-text {
     color: var(--theme-primary);
@@ -69,4 +69,4 @@
       box-shadow: 0 0 0 8px rgba(18, 8, 103, 0);
     }
   }
-}
+
