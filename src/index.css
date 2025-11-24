@@ -1,6 +1,8 @@
 
-/* Optimized CSS imports with critical path prioritization */
+/* Base must come first - contains @tailwind directives */
 @import './styles/base.css';
+
+/* Theme and other styles */
 @import './styles/theme.css';
 @import './styles/components.css';
 @import './styles/utilities.css';
@@ -19,7 +21,7 @@
   width: 40px;
   height: 40px;
   border: 4px solid #f3f4f6;
-  border-top: 4px solid #4A23AD;
+  border-top: 4px solid #1F64ED; /* Azul Blue */
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

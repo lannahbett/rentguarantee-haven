@@ -1,5 +1,5 @@
 
-@layer components {
+/* Component styles */
   /* Primary action buttons - Always filled with primary purple */
   .btn-primary {
     @apply px-6 py-3 bg-[var(--theme-primary)] text-white font-medium rounded-md shadow-sm 
@@ -36,14 +36,24 @@
   
   /* Text buttons - No background, just text color */
   .btn-text {
-    @apply inline-flex items-center font-medium text-[var(--theme-primary)] hover:text-[var(--theme-primary)]/80 transition-colors;
+    @apply inline-flex items-center font-medium transition-colors;
+    color: var(--theme-primary);
   }
   
+  .btn-text:hover {
+    opacity: 0.8;
+  }
+
   /* Text accent buttons */
   .btn-text-accent {
-    @apply inline-flex items-center font-medium text-[var(--theme-accent)] hover:text-[var(--theme-accent)]/80 transition-colors;
+    @apply inline-flex items-center font-medium transition-colors;
+    color: var(--theme-accent);
   }
   
+  .btn-text-accent:hover {
+    opacity: 0.8;
+  }
+
   /* Consistent section dividers */
   .section-divider {
     @apply h-1 w-20 my-6 bg-[var(--theme-accent)] rounded-full opacity-80;
@@ -85,4 +95,4 @@
   .feature-card:hover {
     border-color: color-mix(in srgb, var(--theme-primary) 30%, transparent);
   }
-}
+

@@ -19,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'heading': ['Montserrat', 'sans-serif'],
+				'body': ['Inter', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -63,16 +67,19 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				gold: {
-					light: '#F5EFE0',
-					DEFAULT: '#D4B87B',
-					dark: '#B39153'
+				// Roompeer Brand Colors
+				azul: {
+					DEFAULT: 'hsl(var(--azul))',
+					foreground: 'hsl(var(--azul-foreground))',
 				},
-				cream: {
-					light: '#FFFDF9',
-					DEFAULT: '#FAF7F2',
-					dark: '#F5F0E8'
-				}
+				blueHeath: {
+					DEFAULT: 'hsl(var(--blue-heath))',
+					foreground: 'hsl(var(--blue-heath-foreground))',
+				},
+				youngNight: {
+					DEFAULT: 'hsl(var(--young-night))',
+					foreground: 'hsl(var(--young-night-foreground))',
+				},
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
