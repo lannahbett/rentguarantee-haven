@@ -14,7 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          accommodation_type: string | null
+          age: number | null
+          bio: string | null
+          budget: number | null
+          cleanliness_level: string | null
+          created_at: string | null
+          desired_location: string | null
+          early_riser: boolean | null
+          email: string
+          full_name: string
+          guest_preferences: string | null
+          hobbies: string[] | null
+          id: string
+          ideal_flatmate: string | null
+          move_in_date: string | null
+          night_owl: boolean | null
+          occupation: string | null
+          profile_completed: boolean | null
+          smoker: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accommodation_type?: string | null
+          age?: number | null
+          bio?: string | null
+          budget?: number | null
+          cleanliness_level?: string | null
+          created_at?: string | null
+          desired_location?: string | null
+          early_riser?: boolean | null
+          email: string
+          full_name: string
+          guest_preferences?: string | null
+          hobbies?: string[] | null
+          id?: string
+          ideal_flatmate?: string | null
+          move_in_date?: string | null
+          night_owl?: boolean | null
+          occupation?: string | null
+          profile_completed?: boolean | null
+          smoker?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accommodation_type?: string | null
+          age?: number | null
+          bio?: string | null
+          budget?: number | null
+          cleanliness_level?: string | null
+          created_at?: string | null
+          desired_location?: string | null
+          early_riser?: boolean | null
+          email?: string
+          full_name?: string
+          guest_preferences?: string | null
+          hobbies?: string[] | null
+          id?: string
+          ideal_flatmate?: string | null
+          move_in_date?: string | null
+          night_owl?: boolean | null
+          occupation?: string | null
+          profile_completed?: boolean | null
+          smoker?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
