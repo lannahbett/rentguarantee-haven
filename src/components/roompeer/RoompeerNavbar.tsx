@@ -30,7 +30,10 @@ const RoompeerNavbar = () => {
             <a href="#contact" className="font-body text-foreground hover:text-primary transition-colors">
               Contact
             </a>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-body font-semibold rounded-full">
+            <Button 
+              onClick={() => window.location.href = '/auth'}
+              className="bg-azul hover:bg-azul/90 text-white font-body font-semibold rounded-full"
+            >
               Sign Up
             </Button>
           </div>
@@ -69,7 +72,10 @@ const RoompeerNavbar = () => {
               >
                 Contact
               </a>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-body font-semibold rounded-full w-full">
+              <Button 
+                onClick={() => window.location.href = '/auth'}
+                className="bg-azul hover:bg-azul/90 text-white font-body font-semibold rounded-full w-full"
+              >
                 Sign Up
               </Button>
             </div>

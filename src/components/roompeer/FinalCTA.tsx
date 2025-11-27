@@ -28,13 +28,15 @@ const FinalCTA = () => {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
+              onClick={() => window.location.href = '/auth'}
               size="lg" 
-              className="bg-white text-primary hover:bg-white/90 font-body font-semibold text-lg px-10 py-6 rounded-full shadow-xl hover:shadow-2xl transition-all group"
+              className="bg-white text-azul hover:bg-white/90 font-body font-semibold text-lg px-10 py-6 rounded-full shadow-xl hover:shadow-2xl transition-all group"
             >
               Sign Up Now
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
             </Button>
             <Button 
+              onClick={() => window.location.href = '/dashboard'}
               size="lg" 
               variant="outline" 
               className="border-2 border-white text-white hover:bg-white/10 font-body font-semibold text-lg px-10 py-6 rounded-full backdrop-blur-sm"

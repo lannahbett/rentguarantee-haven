@@ -14,6 +14,9 @@ import RentPrediction from "./pages/RentPrediction";
 import ForTenants from "./pages/ForTenants";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
+import Dashboard from "./pages/Dashboard";
 
 export const routes = createBrowserRouter([
   {
@@ -67,6 +70,18 @@ export const routes = createBrowserRouter([
   {
     path: "/blog/:slug",
     element: <BlogPost />,
+  },
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
+  {
+    path: "/onboarding",
+    element: <Onboarding />,
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />,
   },
   {
     path: "*",
