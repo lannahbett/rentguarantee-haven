@@ -18,6 +18,8 @@ import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import UserProfile from "./pages/UserProfile";
+import HowItWorksRoompeer from "./pages/HowItWorksRoompeer";
+import SafetyTrust from "./pages/SafetyTrust";
 
 export const routes = createBrowserRouter([
   {
@@ -91,6 +93,14 @@ export const routes = createBrowserRouter([
   {
     path: "/profile/:id",
     element: <UserProfile />,
+  },
+  {
+    path: "/how-it-works",
+    element: <HowItWorksRoompeer />,
+  },
+  {
+    path: "/safety",
+    element: <SafetyTrust />,
   },
   {
     path: "*",
