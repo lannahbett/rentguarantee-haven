@@ -337,6 +337,7 @@ const Dashboard = () => {
                     </div>
 
                     <Button
+                      onClick={() => navigate(`/profile/${profile.id}`)}
                       className="w-full mt-2 bg-azul hover:bg-azul/90 text-white font-body font-semibold"
                       size="sm"
                     >

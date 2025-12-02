@@ -17,6 +17,7 @@ import BlogPost from "./pages/BlogPost";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import UserProfile from "./pages/UserProfile";
 
 export const routes = createBrowserRouter([
   {
@@ -82,6 +83,14 @@ export const routes = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/profile",
+    element: <UserProfile />,
+  },
+  {
+    path: "/profile/:id",
+    element: <UserProfile />,
   },
   {
     path: "*",
