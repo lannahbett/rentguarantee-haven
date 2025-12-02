@@ -49,6 +49,9 @@ const RoompeerNavbar = () => {
                 <a href="/dashboard" className="font-body text-foreground hover:text-primary transition-colors">
                   Dashboard
                 </a>
+                <a href="/how-it-works" className="font-body text-foreground hover:text-primary transition-colors">
+                  How It Works
+                </a>
                 <a href="/profile" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   <User size={16} />
                   My Profile
@@ -64,14 +67,14 @@ const RoompeerNavbar = () => {
               </>
             ) : (
               <>
+                <a href="/how-it-works" className="font-body text-foreground hover:text-primary transition-colors">
+                  How It Works
+                </a>
+                <a href="/safety" className="font-body text-foreground hover:text-primary transition-colors">
+                  Safety
+                </a>
                 <a href="#about" className="font-body text-foreground hover:text-primary transition-colors">
                   About
-                </a>
-                <a href="#values" className="font-body text-foreground hover:text-primary transition-colors">
-                  Our Values
-                </a>
-                <a href="#contact" className="font-body text-foreground hover:text-primary transition-colors">
-                  Contact
                 </a>
                 <Button 
                   onClick={() => navigate('/auth')}
@@ -106,6 +109,13 @@ const RoompeerNavbar = () => {
                     Dashboard
                   </a>
                   <a 
+                    href="/how-it-works" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    How It Works
+                  </a>
+                  <a 
                     href="/profile" 
                     className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
                     onClick={() => setIsMenuOpen(false)}
@@ -125,25 +135,25 @@ const RoompeerNavbar = () => {
               ) : (
                 <>
                   <a 
+                    href="/how-it-works" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    How It Works
+                  </a>
+                  <a 
+                    href="/safety" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Safety
+                  </a>
+                  <a 
                     href="#about" 
                     className="font-body text-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     About
-                  </a>
-                  <a 
-                    href="#values" 
-                    className="font-body text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Our Values
-                  </a>
-                  <a 
-                    href="#contact" 
-                    className="font-body text-foreground hover:text-primary transition-colors py-2"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    Contact
                   </a>
                   <Button 
                     onClick={() => { navigate('/auth'); setIsMenuOpen(false); }}
