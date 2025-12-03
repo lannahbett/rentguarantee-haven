@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Users, User, LogOut } from "lucide-react";
+import { Menu, X, Users, User, LogOut, Heart, LayoutGrid } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -46,11 +46,13 @@ const RoompeerNavbar = () => {
           <div className="hidden md:flex items-center gap-8">
             {isLoggedIn ? (
               <>
-                <a href="/dashboard" className="font-body text-foreground hover:text-primary transition-colors">
-                  Dashboard
+                <a href="/browse" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                  <Heart size={16} />
+                  Browse
                 </a>
-                <a href="/how-it-works" className="font-body text-foreground hover:text-primary transition-colors">
-                  How It Works
+                <a href="/dashboard" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                  <LayoutGrid size={16} />
+                  All Profiles
                 </a>
                 <a href="/profile" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   <User size={16} />
@@ -102,18 +104,20 @@ const RoompeerNavbar = () => {
               {isLoggedIn ? (
                 <>
                   <a 
-                    href="/dashboard" 
-                    className="font-body text-foreground hover:text-primary transition-colors py-2"
+                    href="/browse" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Dashboard
+                    <Heart size={16} />
+                    Browse
                   </a>
                   <a 
-                    href="/how-it-works" 
-                    className="font-body text-foreground hover:text-primary transition-colors py-2"
+                    href="/dashboard" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    How It Works
+                    <LayoutGrid size={16} />
+                    All Profiles
                   </a>
                   <a 
                     href="/profile" 

@@ -14,6 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      discovery_settings: {
+        Row: {
+          accommodation_types: string[] | null
+          cleanliness_max: number | null
+          cleanliness_min: number | null
+          created_at: string
+          guest_policy: string[] | null
+          id: string
+          interests: string[] | null
+          max_budget: number | null
+          max_distance: number | null
+          min_budget: number | null
+          pet_preference: string | null
+          sleep_schedule: string | null
+          smoking_preference: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accommodation_types?: string[] | null
+          cleanliness_max?: number | null
+          cleanliness_min?: number | null
+          created_at?: string
+          guest_policy?: string[] | null
+          id?: string
+          interests?: string[] | null
+          max_budget?: number | null
+          max_distance?: number | null
+          min_budget?: number | null
+          pet_preference?: string | null
+          sleep_schedule?: string | null
+          smoking_preference?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accommodation_types?: string[] | null
+          cleanliness_max?: number | null
+          cleanliness_min?: number | null
+          created_at?: string
+          guest_policy?: string[] | null
+          id?: string
+          interests?: string[] | null
+          max_budget?: number | null
+          max_distance?: number | null
+          min_budget?: number | null
+          pet_preference?: string | null
+          sleep_schedule?: string | null
+          smoking_preference?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      likes: {
+        Row: {
+          created_at: string
+          id: string
+          liked_id: string
+          liker_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          liked_id: string
+          liker_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          liked_id?: string
+          liker_id?: string
+        }
+        Relationships: []
+      }
+      matches: {
+        Row: {
+          created_at: string
+          id: string
+          user1_id: string
+          user2_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user1_id: string
+          user2_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user1_id?: string
+          user2_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           accommodation_type: string | null
@@ -27,6 +123,7 @@ export type Database = {
           email: string
           full_name: string
           guest_preferences: string | null
+          has_pets: boolean | null
           hobbies: string[] | null
           id: string
           ideal_flatmate: string | null
@@ -37,6 +134,7 @@ export type Database = {
           smoker: boolean | null
           updated_at: string | null
           user_id: string
+          wants_pets: boolean | null
         }
         Insert: {
           accommodation_type?: string | null
@@ -50,6 +148,7 @@ export type Database = {
           email: string
           full_name: string
           guest_preferences?: string | null
+          has_pets?: boolean | null
           hobbies?: string[] | null
           id?: string
           ideal_flatmate?: string | null
@@ -60,6 +159,7 @@ export type Database = {
           smoker?: boolean | null
           updated_at?: string | null
           user_id: string
+          wants_pets?: boolean | null
         }
         Update: {
           accommodation_type?: string | null
@@ -73,6 +173,7 @@ export type Database = {
           email?: string
           full_name?: string
           guest_preferences?: string | null
+          has_pets?: boolean | null
           hobbies?: string[] | null
           id?: string
           ideal_flatmate?: string | null
@@ -83,6 +184,7 @@ export type Database = {
           smoker?: boolean | null
           updated_at?: string | null
           user_id?: string
+          wants_pets?: boolean | null
         }
         Relationships: []
       }
