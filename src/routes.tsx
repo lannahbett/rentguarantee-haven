@@ -20,6 +20,8 @@ import Dashboard from "./pages/Dashboard";
 import UserProfile from "./pages/UserProfile";
 import HowItWorksRoompeer from "./pages/HowItWorksRoompeer";
 import SafetyTrust from "./pages/SafetyTrust";
+import BrowseMatch from "./pages/BrowseMatch";
+import DiscoverySettings from "./pages/DiscoverySettings";
 
 export const routes = createBrowserRouter([
   {
@@ -101,6 +103,14 @@ export const routes = createBrowserRouter([
   {
     path: "/safety",
     element: <SafetyTrust />,
+  },
+  {
+    path: "/browse",
+    element: <BrowseMatch />,
+  },
+  {
+    path: "/discovery-settings",
+    element: <DiscoverySettings />,
   },
   {
     path: "*",
