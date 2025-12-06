@@ -1,5 +1,6 @@
 import React from "react";
-import { Mail, Phone, Globe, Linkedin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Mail, Phone, Globe, Linkedin, Shield, Cookie } from "lucide-react";
 
 const RoompeerFooter = () => {
   return (
@@ -8,11 +9,57 @@ const RoompeerFooter = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-1">
               <h3 className="font-heading text-2xl font-bold mb-4">Roompeer</h3>
               <p className="font-body text-white/70 mb-4 max-w-md">
                 Making it simple, stress-free, and pleasant to locate a compatible flatmate.
               </p>
+            </div>
+            
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-heading text-lg font-semibold mb-4">Quick Links</h4>
+              <div className="space-y-3">
+                <Link 
+                  to="/how-it-works-roompeer" 
+                  className="block text-white/70 hover:text-white transition-colors font-body"
+                >
+                  How It Works
+                </Link>
+                <Link 
+                  to="/safety-trust" 
+                  className="block text-white/70 hover:text-white transition-colors font-body"
+                >
+                  Safety & Trust
+                </Link>
+                <Link 
+                  to="/browse-match" 
+                  className="block text-white/70 hover:text-white transition-colors font-body"
+                >
+                  Find Flatmates
+                </Link>
+              </div>
+            </div>
+            
+            {/* Legal */}
+            <div>
+              <h4 className="font-heading text-lg font-semibold mb-4">Legal</h4>
+              <div className="space-y-3">
+                <Link 
+                  to="/roompeer-privacy-policy" 
+                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
+                >
+                  <Shield size={16} />
+                  <span>Privacy Policy</span>
+                </Link>
+                <Link 
+                  to="/cookie-policy" 
+                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
+                >
+                  <Cookie size={16} />
+                  <span>Cookie Policy</span>
+                </Link>
+              </div>
             </div>
             
             {/* Contact Info */}
@@ -42,13 +89,6 @@ const RoompeerFooter = () => {
                   <Globe size={18} />
                   <span>www.roompeer.com</span>
                 </a>
-              </div>
-            </div>
-            
-            {/* Social Media */}
-            <div>
-              <h4 className="font-heading text-lg font-semibold mb-4">Follow Us</h4>
-              <div className="space-y-3">
                 <a 
                   href="https://www.linkedin.com/company/roompeer" 
                   target="_blank" 
@@ -63,10 +103,24 @@ const RoompeerFooter = () => {
           </div>
           
           {/* Bottom Bar */}
-          <div className="border-t border-white/10 pt-8 text-center">
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="font-body text-white/60 text-sm">
               © {new Date().getFullYear()} Roompeer. All rights reserved.
             </p>
+            <div className="flex gap-6 text-sm">
+              <Link 
+                to="/roompeer-privacy-policy" 
+                className="text-white/60 hover:text-white transition-colors font-body"
+              >
+                Privacy
+              </Link>
+              <Link 
+                to="/cookie-policy" 
+                className="text-white/60 hover:text-white transition-colors font-body"
+              >
+                Cookies
+              </Link>
+            </div>
           </div>
         </div>
       </div>

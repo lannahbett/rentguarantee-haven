@@ -23,6 +23,8 @@ import SafetyTrust from "./pages/SafetyTrust";
 import BrowseMatch from "./pages/BrowseMatch";
 import DiscoverySettings from "./pages/DiscoverySettings";
 import Matches from "./pages/Matches";
+import CookiePolicy from "./pages/CookiePolicy";
+import RoompeerPrivacyPolicy from "./pages/RoompeerPrivacyPolicy";
 
 export const routes = createBrowserRouter([
   {
@@ -116,6 +118,22 @@ export const routes = createBrowserRouter([
   {
     path: "/matches",
     element: <Matches />,
+  },
+  {
+    path: "/cookie-policy",
+    element: <CookiePolicy />,
+  },
+  {
+    path: "/roompeer-privacy-policy",
+    element: <RoompeerPrivacyPolicy />,
+  },
+  {
+    path: "/how-it-works-roompeer",
+    element: <HowItWorksRoompeer />,
+  },
+  {
+    path: "/safety-trust",
+    element: <SafetyTrust />,
   },
   {
     path: "*",
