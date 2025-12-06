@@ -22,6 +22,7 @@ import HowItWorksRoompeer from "./pages/HowItWorksRoompeer";
 import SafetyTrust from "./pages/SafetyTrust";
 import BrowseMatch from "./pages/BrowseMatch";
 import DiscoverySettings from "./pages/DiscoverySettings";
+import Matches from "./pages/Matches";
 
 export const routes = createBrowserRouter([
   {
@@ -111,6 +112,10 @@ export const routes = createBrowserRouter([
   {
     path: "/discovery-settings",
     element: <DiscoverySettings />,
+  },
+  {
+    path: "/matches",
+    element: <Matches />,
   },
   {
     path: "*",

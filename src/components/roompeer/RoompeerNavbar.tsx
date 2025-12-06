@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Users, User, LogOut, Heart, LayoutGrid } from "lucide-react";
+import { Menu, X, Users, User, LogOut, Heart, LayoutGrid, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -49,6 +49,10 @@ const RoompeerNavbar = () => {
                 <a href="/browse" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   <Heart size={16} />
                   Browse
+                </a>
+                <a href="/matches" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                  <MessageCircle size={16} />
+                  Matches
                 </a>
                 <a href="/dashboard" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   <LayoutGrid size={16} />
@@ -110,6 +114,14 @@ const RoompeerNavbar = () => {
                   >
                     <Heart size={16} />
                     Browse
+                  </a>
+                  <a 
+                    href="/matches" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <MessageCircle size={16} />
+                    Matches
                   </a>
                   <a 
                     href="/dashboard" 
