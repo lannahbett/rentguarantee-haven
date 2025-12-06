@@ -89,7 +89,7 @@ const CookieConsentBanner = () => {
               <div>
                 <p className="text-[#232323] text-sm md:text-base">
                   This website uses cookies to ensure you get the best experience and to enable matching functionality.{' '}
-                  <a href="/privacy-policy" className="text-primary hover:underline">
+                  <a href="/cookie-policy" className="text-azulBlue hover:underline">
                     See our Cookie Policy for details.
                   </a>
                 </p>
