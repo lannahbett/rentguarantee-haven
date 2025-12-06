@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
 import { toast } from "sonner";
+import CookieConsentBanner from "@/components/gdpr/CookieConsentBanner";
 
 // Define a constant version that matches the script tag version
 const APP_VERSION = '20250424';
@@ -67,6 +68,7 @@ const App: React.FC = () => {
         <Toaster />
         <Sonner />
         <RouterProvider router={routes} />
+        <CookieConsentBanner />
       </TooltipProvider>
     </QueryClientProvider>
   );
