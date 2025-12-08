@@ -35,18 +35,18 @@ const RoompeerFooter = () => {
                   <span>How It Works</span>
                 </Link>
                 <Link 
-                  to="/safety-trust" 
-                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
-                >
-                  <Shield size={16} />
-                  <span>Safety & Trust</span>
-                </Link>
-                <Link 
                   to="/roompeer-pricing" 
                   className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
                 >
                   <DollarSign size={16} />
                   <span>Pricing</span>
+                </Link>
+                <Link 
+                  to="/safety-trust" 
+                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
+                >
+                  <Shield size={16} />
+                  <span>Safety & Trust</span>
                 </Link>
               </div>
             </div>
