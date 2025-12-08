@@ -26,6 +26,7 @@ import Matches from "./pages/Matches";
 import CookiePolicy from "./pages/CookiePolicy";
 import RoompeerPrivacyPolicy from "./pages/RoompeerPrivacyPolicy";
 import RoompeerPricing from "./pages/RoompeerPricing";
+import RoompeerBilling from "./pages/RoompeerBilling";
 
 export const routes = createBrowserRouter([
   {
@@ -139,6 +140,10 @@ export const routes = createBrowserRouter([
   {
     path: "/roompeer-pricing",
     element: <RoompeerPricing />,
+  },
+  {
+    path: "/roompeer-billing",
+    element: <RoompeerBilling />,
   },
   {
     path: "/browse-match",
