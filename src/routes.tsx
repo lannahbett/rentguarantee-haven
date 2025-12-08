@@ -25,6 +25,7 @@ import DiscoverySettings from "./pages/DiscoverySettings";
 import Matches from "./pages/Matches";
 import CookiePolicy from "./pages/CookiePolicy";
 import RoompeerPrivacyPolicy from "./pages/RoompeerPrivacyPolicy";
+import RoompeerPricing from "./pages/RoompeerPricing";
 
 export const routes = createBrowserRouter([
   {
@@ -134,6 +135,14 @@ export const routes = createBrowserRouter([
   {
     path: "/safety-trust",
     element: <SafetyTrust />,
+  },
+  {
+    path: "/roompeer-pricing",
+    element: <RoompeerPricing />,
+  },
+  {
+    path: "/browse-match",
+    element: <BrowseMatch />,
   },
   {
     path: "*",
