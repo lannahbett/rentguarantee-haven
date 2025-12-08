@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Users, User, LogOut, Heart, LayoutGrid, MessageCircle } from "lucide-react";
+import { Menu, X, Users, User, LogOut, Heart, MessageCircle, Settings, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -46,7 +46,7 @@ const RoompeerNavbar = () => {
           <div className="hidden md:flex items-center gap-8">
             {isLoggedIn ? (
               <>
-                <a href="/browse" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                <a href="/browse-match" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   <Heart size={16} />
                   Browse
                 </a>
@@ -54,13 +54,13 @@ const RoompeerNavbar = () => {
                   <MessageCircle size={16} />
                   Matches
                 </a>
-                <a href="/dashboard" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
-                  <LayoutGrid size={16} />
-                  All Profiles
-                </a>
                 <a href="/profile" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   <User size={16} />
-                  My Profile
+                  Profile
+                </a>
+                <a href="/discovery-settings" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                  <Settings size={16} />
+                  Discovery
                 </a>
                 <Button 
                   onClick={handleLogout}
@@ -73,14 +73,15 @@ const RoompeerNavbar = () => {
               </>
             ) : (
               <>
-                <a href="/how-it-works" className="font-body text-foreground hover:text-primary transition-colors">
+                <a href="/how-it-works-roompeer" className="font-body text-foreground hover:text-primary transition-colors">
                   How It Works
                 </a>
-                <a href="/safety" className="font-body text-foreground hover:text-primary transition-colors">
+                <a href="/safety-trust" className="font-body text-foreground hover:text-primary transition-colors">
                   Safety
                 </a>
-                <a href="#about" className="font-body text-foreground hover:text-primary transition-colors">
-                  About
+                <a href="/roompeer-pricing" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                  <DollarSign size={16} />
+                  Pricing
                 </a>
                 <Button 
                   onClick={() => navigate('/auth')}
@@ -108,7 +109,7 @@ const RoompeerNavbar = () => {
               {isLoggedIn ? (
                 <>
                   <a 
-                    href="/browse" 
+                    href="/browse-match" 
                     className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -124,20 +125,20 @@ const RoompeerNavbar = () => {
                     Matches
                   </a>
                   <a 
-                    href="/dashboard" 
-                    className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <LayoutGrid size={16} />
-                    All Profiles
-                  </a>
-                  <a 
                     href="/profile" 
                     className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <User size={16} />
-                    My Profile
+                    Profile
+                  </a>
+                  <a 
+                    href="/discovery-settings" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <Settings size={16} />
+                    Discovery
                   </a>
                   <Button 
                     onClick={() => { handleLogout(); setIsMenuOpen(false); }}
@@ -151,25 +152,26 @@ const RoompeerNavbar = () => {
               ) : (
                 <>
                   <a 
-                    href="/how-it-works" 
+                    href="/how-it-works-roompeer" 
                     className="font-body text-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     How It Works
                   </a>
                   <a 
-                    href="/safety" 
+                    href="/safety-trust" 
                     className="font-body text-foreground hover:text-primary transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Safety
                   </a>
                   <a 
-                    href="#about" 
-                    className="font-body text-foreground hover:text-primary transition-colors py-2"
+                    href="/roompeer-pricing" 
+                    className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    About
+                    <DollarSign size={16} />
+                    Pricing
                   </a>
                   <Button 
                     onClick={() => { navigate('/auth'); setIsMenuOpen(false); }}

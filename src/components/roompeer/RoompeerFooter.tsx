@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, Globe, Linkedin, Shield, Cookie } from "lucide-react";
+import { Mail, Phone, Globe, Linkedin, Shield, Cookie, Home, HelpCircle, DollarSign } from "lucide-react";
 
 const RoompeerFooter = () => {
   return (
@@ -21,22 +21,32 @@ const RoompeerFooter = () => {
               <h4 className="font-heading text-lg font-semibold mb-4">Quick Links</h4>
               <div className="space-y-3">
                 <Link 
-                  to="/how-it-works-roompeer" 
-                  className="block text-white/70 hover:text-white transition-colors font-body"
+                  to="/browse-match" 
+                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
                 >
-                  How It Works
+                  <Home size={16} />
+                  <span>Home</span>
+                </Link>
+                <Link 
+                  to="/how-it-works-roompeer" 
+                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
+                >
+                  <HelpCircle size={16} />
+                  <span>How It Works</span>
                 </Link>
                 <Link 
                   to="/safety-trust" 
-                  className="block text-white/70 hover:text-white transition-colors font-body"
+                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
                 >
-                  Safety & Trust
+                  <Shield size={16} />
+                  <span>Safety & Trust</span>
                 </Link>
                 <Link 
-                  to="/browse-match" 
-                  className="block text-white/70 hover:text-white transition-colors font-body"
+                  to="/roompeer-pricing" 
+                  className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body"
                 >
-                  Find Flatmates
+                  <DollarSign size={16} />
+                  <span>Pricing</span>
                 </Link>
               </div>
             </div>
