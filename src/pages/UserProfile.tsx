@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import RoompeerNavbar from "@/components/roompeer/RoompeerNavbar";
+import QuickEditField from "@/components/profile/QuickEditField";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
@@ -18,7 +19,8 @@ import {
   Cigarette,
   Sparkles,
   Users,
-  Heart
+  Heart,
+  Pencil
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -93,12 +95,41 @@ const UserProfile = () => {
     }
   };
 
+  const handleQuickSave = async (field: string, value: string) => {
+    if (!profile || !isOwnProfile) return;
+
+    try {
+      const updateData: Record<string, any> = {};
+      
+      if (field === "budget") {
+        updateData[field] = value ? parseFloat(value) : null;
+      } else if (field === "age") {
+        updateData[field] = value ? parseInt(value) : null;
+      } else {
+        updateData[field] = value || null;
+      }
+
+      const { error } = await supabase
+        .from("profiles")
+        .update(updateData)
+        .eq("user_id", profile.user_id);
+
+      if (error) throw error;
+
+      setProfile(prev => prev ? { ...prev, ...updateData } : null);
+      toast.success("Updated successfully!");
+    } catch (error: any) {
+      toast.error("Failed to update");
+      throw error;
+    }
+  };
+
   const handleMessage = () => {
     toast.info("Messaging feature coming soon!");
   };
 
   const handleEdit = () => {
-    navigate("/onboarding");
+    navigate("/edit-profile");
   };
 
   const getCleanlinessLabel = (level: string | null) => {
@@ -136,8 +167,18 @@ const UserProfile = () => {
           <div className="bg-card border border-border rounded-lg p-8 mb-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
               {/* Profile Picture */}
-              <div className="bg-gradient-to-br from-azul to-blue-heath p-6 rounded-full">
-                <User size={48} className="text-white" />
+              <div className="relative group">
+                <div className="bg-gradient-to-br from-azul to-blue-heath p-6 rounded-full">
+                  <User size={48} className="text-white" />
+                </div>
+                {isOwnProfile && (
+                  <button 
+                    onClick={() => toast.info("Photo upload coming soon!")}
+                    className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  >
+                    <Pencil size={24} className="text-white" />
+                  </button>
+                )}
               </div>
               
               {/* Name & Headline */}
@@ -150,10 +191,24 @@ const UserProfile = () => {
                     {profile.age} years old
                   </p>
                 )}
-                <p className="text-muted-foreground font-body mt-2">
-                  {profile.occupation || "Looking for a flatmate"}
-                  {profile.desired_location && ` • ${profile.desired_location}`}
-                </p>
+                {isOwnProfile ? (
+                  <QuickEditField
+                    value={profile.bio}
+                    displayValue={profile.occupation 
+                      ? `${profile.occupation}${profile.desired_location ? ` • ${profile.desired_location}` : ""}`
+                      : "Add your headline..."
+                    }
+                    onSave={(val) => handleQuickSave("bio", val)}
+                    type="textarea"
+                    placeholder="Add a short bio..."
+                    className="mt-2 text-muted-foreground"
+                  />
+                ) : (
+                  <p className="text-muted-foreground font-body mt-2">
+                    {profile.occupation || "Looking for a flatmate"}
+                    {profile.desired_location && ` • ${profile.desired_location}`}
+                  </p>
+                )}
               </div>
 
               {/* Action Buttons */}
@@ -205,9 +260,18 @@ const UserProfile = () => {
                     <User size={20} className="text-azul" />
                     About
                   </h3>
-                  <p className="text-foreground font-body leading-relaxed">
-                    {profile.bio || "No bio added yet."}
-                  </p>
+                  {isOwnProfile ? (
+                    <QuickEditField
+                      value={profile.bio}
+                      onSave={(val) => handleQuickSave("bio", val)}
+                      type="textarea"
+                      placeholder="Tell others about yourself..."
+                    />
+                  ) : (
+                    <p className="text-foreground font-body leading-relaxed">
+                      {profile.bio || "No bio added yet."}
+                    </p>
+                  )}
                 </div>
 
                 <div className="border-t border-border pt-6">
@@ -215,9 +279,17 @@ const UserProfile = () => {
                     <Briefcase size={20} className="text-azul" />
                     Occupation
                   </h3>
-                  <p className="text-foreground font-body">
-                    {profile.occupation || "Not specified"}
-                  </p>
+                  {isOwnProfile ? (
+                    <QuickEditField
+                      value={profile.occupation}
+                      onSave={(val) => handleQuickSave("occupation", val)}
+                      placeholder="Your occupation..."
+                    />
+                  ) : (
+                    <p className="text-foreground font-body">
+                      {profile.occupation || "Not specified"}
+                    </p>
+                  )}
                 </div>
 
                 <div className="border-t border-border pt-6">
@@ -255,11 +327,23 @@ const UserProfile = () => {
                     <div className="bg-azul/10 p-3 rounded-lg">
                       <DollarSign size={24} className="text-azul" />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-muted-foreground font-body">Monthly Budget</p>
-                      <p className="text-lg font-semibold font-body text-[#232323]">
-                        {profile.budget ? `£${profile.budget}` : "Not specified"}
-                      </p>
+                      {isOwnProfile ? (
+                        <QuickEditField
+                          value={profile.budget}
+                          displayValue={profile.budget ? `€${profile.budget}` : undefined}
+                          onSave={(val) => handleQuickSave("budget", val)}
+                          type="number"
+                          prefix="€"
+                          placeholder="Enter budget..."
+                          className="text-lg font-semibold text-[#232323]"
+                        />
+                      ) : (
+                        <p className="text-lg font-semibold font-body text-[#232323]">
+                          {profile.budget ? `€${profile.budget}` : "Not specified"}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -267,11 +351,20 @@ const UserProfile = () => {
                     <div className="bg-azul/10 p-3 rounded-lg">
                       <MapPin size={24} className="text-azul" />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-muted-foreground font-body">Desired Location</p>
-                      <p className="text-lg font-semibold font-body text-[#232323]">
-                        {profile.desired_location || "Not specified"}
-                      </p>
+                      {isOwnProfile ? (
+                        <QuickEditField
+                          value={profile.desired_location}
+                          onSave={(val) => handleQuickSave("desired_location", val)}
+                          placeholder="Enter location..."
+                          className="text-lg font-semibold text-[#232323]"
+                        />
+                      ) : (
+                        <p className="text-lg font-semibold font-body text-[#232323]">
+                          {profile.desired_location || "Not specified"}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -279,17 +372,34 @@ const UserProfile = () => {
                     <div className="bg-azul/10 p-3 rounded-lg">
                       <Calendar size={24} className="text-azul" />
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm text-muted-foreground font-body">Move-in Date</p>
-                      <p className="text-lg font-semibold font-body text-[#232323]">
-                        {profile.move_in_date 
-                          ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
-                              day: 'numeric', 
-                              month: 'long', 
-                              year: 'numeric' 
-                            })
-                          : "Flexible"}
-                      </p>
+                      {isOwnProfile ? (
+                        <QuickEditField
+                          value={profile.move_in_date}
+                          displayValue={profile.move_in_date 
+                            ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
+                                day: 'numeric', 
+                                month: 'long', 
+                                year: 'numeric' 
+                              })
+                            : undefined
+                          }
+                          onSave={(val) => handleQuickSave("move_in_date", val)}
+                          placeholder="YYYY-MM-DD"
+                          className="text-lg font-semibold text-[#232323]"
+                        />
+                      ) : (
+                        <p className="text-lg font-semibold font-body text-[#232323]">
+                          {profile.move_in_date 
+                            ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
+                                day: 'numeric', 
+                                month: 'long', 
+                                year: 'numeric' 
+                              })
+                            : "Flexible"}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -387,9 +497,18 @@ const UserProfile = () => {
                   What I'm Looking For
                 </h3>
                 
-                <p className="text-foreground font-body leading-relaxed">
-                  {profile.ideal_flatmate || "No preferences specified yet."}
-                </p>
+                {isOwnProfile ? (
+                  <QuickEditField
+                    value={profile.ideal_flatmate}
+                    onSave={(val) => handleQuickSave("ideal_flatmate", val)}
+                    type="textarea"
+                    placeholder="Describe your ideal flatmate..."
+                  />
+                ) : (
+                  <p className="text-foreground font-body leading-relaxed">
+                    {profile.ideal_flatmate || "No preferences specified yet."}
+                  </p>
+                )}
               </div>
             </TabsContent>
           </Tabs>
