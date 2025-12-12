@@ -27,6 +27,8 @@ import CookiePolicy from "./pages/CookiePolicy";
 import RoompeerPrivacyPolicy from "./pages/RoompeerPrivacyPolicy";
 import RoompeerPricing from "./pages/RoompeerPricing";
 import RoompeerBilling from "./pages/RoompeerBilling";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 export const routes = createBrowserRouter([
   {
@@ -84,6 +86,14 @@ export const routes = createBrowserRouter([
   {
     path: "/auth",
     element: <Auth />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
   {
     path: "/onboarding",
