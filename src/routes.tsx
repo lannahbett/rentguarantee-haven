@@ -29,6 +29,7 @@ import RoompeerPricing from "./pages/RoompeerPricing";
 import RoompeerBilling from "./pages/RoompeerBilling";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import EditProfile from "./pages/EditProfile";
 
 export const routes = createBrowserRouter([
   {
@@ -110,6 +111,10 @@ export const routes = createBrowserRouter([
   {
     path: "/profile/:id",
     element: <UserProfile />,
+  },
+  {
+    path: "/edit-profile",
+    element: <EditProfile />,
   },
   {
     path: "/how-it-works",
