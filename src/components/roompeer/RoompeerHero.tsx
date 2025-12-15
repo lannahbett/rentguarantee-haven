@@ -1,10 +1,8 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
-
 const RoompeerHero = () => {
-  return (
-    <section className="relative bg-gradient-to-br from-primary via-secondary to-primary min-h-[90vh] flex items-center justify-center overflow-hidden">
+  return <section className="relative bg-gradient-to-br from-primary via-secondary to-primary min-h-[90vh] flex items-center justify-center overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
@@ -33,19 +31,10 @@ const RoompeerHero = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              onClick={() => window.location.href = '/auth'}
-              size="lg" 
-              className="bg-white text-azul hover:bg-white/90 font-body font-semibold text-lg px-8 py-6 rounded-full shadow-xl hover:shadow-2xl transition-all"
-            >
+            <Button onClick={() => window.location.href = '/auth'} size="lg" className="bg-white text-azul hover:bg-white/90 font-body font-semibold text-lg px-8 py-6 rounded-full shadow-xl hover:shadow-2xl transition-all">
               Get Started
             </Button>
-            <Button 
-              onClick={() => window.location.href = '/dashboard'}
-              size="lg" 
-              variant="outline" 
-              className="border-2 border-white text-white hover:bg-white/10 font-body font-semibold text-lg px-8 py-6 rounded-full backdrop-blur-sm"
-            >
+            <Button onClick={() => window.location.href = '/dashboard'} size="lg" variant="outline" className="border-2 border-white hover:bg-white/10 font-body font-semibold text-lg px-8 py-6 rounded-full backdrop-blur-sm text-primary">
               Learn More
             </Button>
           </div>
@@ -55,11 +44,9 @@ const RoompeerHero = () => {
       {/* Bottom wave decoration */}
       <div className="absolute bottom-0 left-0 right-0">
         <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/>
+          <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white" />
         </svg>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default RoompeerHero;
