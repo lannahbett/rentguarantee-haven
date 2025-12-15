@@ -33,7 +33,11 @@ const INTEREST_OPTIONS = [
   "Technology", "Fashion", "Gardening", "Pets", "Meditation", "Coffee"
 ];
 
-const EditProfile = () => {
+interface EditProfileProps {
+  embedded?: boolean;
+}
+
+const EditProfile = ({ embedded = false }: EditProfileProps) => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -222,6 +226,9 @@ const EditProfile = () => {
   };
 
   if (loading) {
+    if (embedded) {
+      return <p className="text-muted-foreground font-body">Loading profile...</p>;
+    }
     return (
       <div className="min-h-screen bg-background">
         <RoompeerNavbar />
@@ -232,6 +239,441 @@ const EditProfile = () => {
     );
   }
 
+  // Embedded version without navbar
+  if (embedded) {
+    return (
+      <div className="space-y-6">
+        {/* Save Button for embedded */}
+        <div className="flex justify-end gap-3">
+          <Button
+            onClick={handleSave}
+            disabled={saving}
+            className="bg-azul hover:bg-azul/90 text-white font-body font-semibold"
+          >
+            {saving ? "Saving..." : saved ? <><Check size={18} className="mr-2" />Saved</> : <><Save size={18} className="mr-2" />Save Changes</>}
+          </Button>
+        </div>
+        
+        {saved && (
+          <p className="text-green-600 font-body text-sm flex items-center gap-1">
+            <Check size={14} /> All changes saved
+          </p>
+        )}
+
+        {/* Profile Picture Section */}
+        <div className="border border-border rounded-lg p-6">
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <div className="bg-gradient-to-br from-azul to-blue-heath p-8 rounded-full">
+                <Users size={48} className="text-white" />
+              </div>
+              <button 
+                className="absolute bottom-0 right-0 bg-blue-heath text-white p-2 rounded-full hover:bg-blue-heath/90 transition-colors"
+                onClick={() => toast.info("Photo upload coming soon!")}
+              >
+                <Camera size={16} />
+              </button>
+            </div>
+            <div>
+              <h2 className="font-heading text-xl font-bold text-[#232323]">Profile Picture</h2>
+              <p className="text-muted-foreground font-body text-sm">
+                Add a photo to help others recognize you
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2 font-body text-sm"
+                onClick={() => toast.info("Photo upload coming soon!")}
+              >
+                Upload Photo
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Section 1: Basic Information */}
+        <Collapsible open={basicOpen} onOpenChange={setBasicOpen}>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <h2 className="font-heading text-xl font-bold text-azul">Basic Information</h2>
+              <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", basicOpen && "rotate-180")} />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="px-6 pb-6 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="font-body font-medium">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    value={fullName}
+                    onChange={(e) => { setFullName(e.target.value); markChanged(); }}
+                    placeholder="John Doe"
+                    className="font-body"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="age" className="font-body font-medium">Age</Label>
+                    <Input
+                      id="age"
+                      type="number"
+                      value={age}
+                      onChange={(e) => { setAge(e.target.value); markChanged(); }}
+                      placeholder="25"
+                      className="font-body"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="occupation" className="font-body font-medium">Occupation</Label>
+                    <Input
+                      id="occupation"
+                      value={occupation}
+                      onChange={(e) => { setOccupation(e.target.value); markChanged(); }}
+                      placeholder="Software Developer"
+                      className="font-body"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="bio" className="font-body font-medium">Bio / Headline</Label>
+                    <span className={cn(
+                      "text-xs font-body",
+                      bio.length > 200 ? "text-destructive" : "text-muted-foreground"
+                    )}>
+                      {bio.length}/200
+                    </span>
+                  </div>
+                  <Textarea
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => { setBio(e.target.value.slice(0, 200)); markChanged(); }}
+                    placeholder="Tell others about yourself in a few words..."
+                    rows={3}
+                    className="font-body"
+                  />
+                </div>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+
+        {/* Section 2: Living Preferences */}
+        <Collapsible open={livingOpen} onOpenChange={setLivingOpen}>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <h2 className="font-heading text-xl font-bold text-azul">Living Preferences</h2>
+              <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", livingOpen && "rotate-180")} />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="px-6 pb-6 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="location" className="font-body font-medium">Desired Location</Label>
+                  <Input
+                    id="location"
+                    value={desiredLocation}
+                    onChange={(e) => { setDesiredLocation(e.target.value); markChanged(); }}
+                    placeholder="London, UK"
+                    className="font-body"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-body font-medium">Budget Range (Monthly)</Label>
+                  <div className="pt-2 pb-4">
+                    <Slider
+                      value={[budgetMin, budgetMax]}
+                      onValueChange={(val) => { setBudgetMin(val[0]); setBudgetMax(val[1]); markChanged(); }}
+                      max={5000}
+                      step={50}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between mt-2 text-sm font-body text-muted-foreground">
+                      <span>€{budgetMin}</span>
+                      <span>€{budgetMax}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-body font-medium">Move-in Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-body",
+                          !moveInDate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {moveInDate ? format(moveInDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={moveInDate}
+                        onSelect={(date) => { setMoveInDate(date); markChanged(); }}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="accommodationType" className="font-body font-medium">Accommodation Type</Label>
+                  <select
+                    id="accommodationType"
+                    value={accommodationType}
+                    onChange={(e) => { setAccommodationType(e.target.value); markChanged(); }}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background font-body focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="">Select type</option>
+                    <option value="apartment">Apartment</option>
+                    <option value="house">House</option>
+                    <option value="room">Private Room</option>
+                    <option value="shared-room">Shared Room</option>
+                  </select>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+
+        {/* Section 3: Lifestyle */}
+        <Collapsible open={lifestyleOpen} onOpenChange={setLifestyleOpen}>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <h2 className="font-heading text-xl font-bold text-azul">Lifestyle</h2>
+              <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", lifestyleOpen && "rotate-180")} />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="px-6 pb-6 space-y-6">
+                {/* Sleep Schedule */}
+                <div className="space-y-3">
+                  <Label className="font-body font-medium">Sleep Schedule</Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {[
+                      { value: "early", label: "Early Bird", icon: Sun },
+                      { value: "night", label: "Night Owl", icon: Moon },
+                      { value: "flexible", label: "Flexible", icon: Sparkles }
+                    ].map(({ value, label, icon: Icon }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => { setSleepSchedule(value); markChanged(); }}
+                        className={cn(
+                          "p-4 rounded-lg border-2 transition-all flex flex-col items-center gap-2",
+                          sleepSchedule === value 
+                            ? "border-azul bg-azul/5" 
+                            : "border-border hover:border-muted-foreground"
+                        )}
+                      >
+                        <Icon size={24} className={sleepSchedule === value ? "text-azul" : "text-muted-foreground"} />
+                        <span className={cn(
+                          "text-sm font-body font-medium",
+                          sleepSchedule === value ? "text-azul" : "text-muted-foreground"
+                        )}>
+                          {label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Cleanliness Slider */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="font-body font-medium">Cleanliness Level</Label>
+                    <span className="text-sm font-body">
+                      {getCleanlinessEmoji(cleanliness[0])} {getCleanlinessLabel(cleanliness[0])}
+                    </span>
+                  </div>
+                  <Slider
+                    value={cleanliness}
+                    onValueChange={(val) => { setCleanliness(val); markChanged(); }}
+                    max={10}
+                    min={1}
+                    step={1}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs font-body text-muted-foreground">
+                    <span>Relaxed</span>
+                    <span>Very Tidy</span>
+                  </div>
+                </div>
+
+                {/* Smoking & Pets */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <Label className="font-body font-medium">Smoking</Label>
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => { setSmoker(false); markChanged(); }}
+                        className={cn(
+                          "flex-1 py-3 rounded-lg border-2 transition-all font-body text-sm font-medium",
+                          !smoker ? "border-azul bg-azul/5 text-azul" : "border-border text-muted-foreground"
+                        )}
+                      >
+                        Non-Smoker
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setSmoker(true); markChanged(); }}
+                        className={cn(
+                          "flex-1 py-3 rounded-lg border-2 transition-all font-body text-sm font-medium",
+                          smoker ? "border-azul bg-azul/5 text-azul" : "border-border text-muted-foreground"
+                        )}
+                      >
+                        Smoker
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Label className="font-body font-medium">Pets</Label>
+                    <div className="space-y-2">
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={hasPets}
+                          onChange={(e) => { setHasPets(e.target.checked); markChanged(); }}
+                          className="w-4 h-4 rounded border-border"
+                        />
+                        <span className="text-sm font-body">I have pets</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={wantsPets}
+                          onChange={(e) => { setWantsPets(e.target.checked); markChanged(); }}
+                          className="w-4 h-4 rounded border-border"
+                        />
+                        <span className="text-sm font-body">Open to pets</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Guest Policy */}
+                <div className="space-y-2">
+                  <Label htmlFor="guestPolicy" className="font-body font-medium">Guest Policy</Label>
+                  <select
+                    id="guestPolicy"
+                    value={guestPolicy}
+                    onChange={(e) => { setGuestPolicy(e.target.value); markChanged(); }}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background font-body focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="">Select preference</option>
+                    <option value="often">Often have guests</option>
+                    <option value="sometimes">Occasional guests</option>
+                    <option value="rarely">Prefer quiet home</option>
+                    <option value="flexible">No preference</option>
+                  </select>
+                </div>
+
+                {/* Interests */}
+                <div className="space-y-3">
+                  <Label className="font-body font-medium">Interests & Hobbies</Label>
+                  <Input
+                    placeholder="Search interests..."
+                    value={interestSearch}
+                    onChange={(e) => setInterestSearch(e.target.value)}
+                    className="font-body mb-3"
+                  />
+                  <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
+                    {filteredInterests.map(interest => (
+                      <button
+                        key={interest}
+                        type="button"
+                        onClick={() => toggleInterest(interest)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-full text-sm font-body transition-all",
+                          interests.includes(interest)
+                            ? "bg-azul text-white"
+                            : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        )}
+                      >
+                        {interest}
+                      </button>
+                    ))}
+                  </div>
+                  {interests.length > 0 && (
+                    <p className="text-xs text-muted-foreground font-body">
+                      Selected: {interests.join(", ")}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+
+        {/* Section 4: What You're Looking For */}
+        <Collapsible open={lookingForOpen} onOpenChange={setLookingForOpen}>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <h2 className="font-heading text-xl font-bold text-azul">What You're Looking For</h2>
+              <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", lookingForOpen && "rotate-180")} />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="px-6 pb-6 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="idealFlatmate" className="font-body font-medium">Ideal Flatmate Description</Label>
+                  <Textarea
+                    id="idealFlatmate"
+                    value={idealFlatmate}
+                    onChange={(e) => { setIdealFlatmate(e.target.value); markChanged(); }}
+                    placeholder="Describe your ideal flatmate - personality, habits, shared interests..."
+                    rows={4}
+                    className="font-body"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-body font-medium">Preferred Age Range</Label>
+                  <div className="pt-2 pb-4">
+                    <Slider
+                      value={[agePreferenceMin, agePreferenceMax]}
+                      onValueChange={(val) => { setAgePreferenceMin(val[0]); setAgePreferenceMax(val[1]); markChanged(); }}
+                      min={18}
+                      max={70}
+                      step={1}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between mt-2 text-sm font-body text-muted-foreground">
+                      <span>{agePreferenceMin} years</span>
+                      <span>{agePreferenceMax} years</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="font-body font-medium">Gender Preference (Optional)</Label>
+                  <select
+                    value={genderPreference}
+                    onChange={(e) => { setGenderPreference(e.target.value); markChanged(); }}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background font-body focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    <option value="any">No preference</option>
+                    <option value="male">Male only</option>
+                    <option value="female">Female only</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
+      </div>
+    );
+  }
+
+  // Full page version
   return (
     <div className="min-h-screen bg-background">
       <RoompeerNavbar />

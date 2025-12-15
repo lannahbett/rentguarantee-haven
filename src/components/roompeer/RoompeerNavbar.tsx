@@ -58,9 +58,9 @@ const RoompeerNavbar = () => {
                   <User size={16} />
                   Profile
                 </a>
-                <a href="/discovery-settings" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                <a href="/settings" className="font-body text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   <Settings size={16} />
-                  Discovery
+                  Settings
                 </a>
                 <Button 
                   onClick={handleLogout}
@@ -133,12 +133,12 @@ const RoompeerNavbar = () => {
                     Profile
                   </a>
                   <a 
-                    href="/discovery-settings" 
+                    href="/settings" 
                     className="font-body text-foreground hover:text-primary transition-colors py-2 flex items-center gap-1"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Settings size={16} />
-                    Discovery
+                    Settings
                   </a>
                   <Button 
                     onClick={() => { handleLogout(); setIsMenuOpen(false); }}
