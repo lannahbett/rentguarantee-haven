@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import RoompeerNavbar from "@/components/roompeer/RoompeerNavbar";
 import QuickEditField from "@/components/profile/QuickEditField";
+import EditProfile from "./EditProfile";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   User, 
   MessageCircle, 
-  Edit, 
   MapPin, 
   DollarSign, 
   Calendar, 
@@ -20,7 +20,9 @@ import {
   Sparkles,
   Users,
   Heart,
-  Pencil
+  Pencil,
+  Eye,
+  Edit
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -48,10 +50,12 @@ interface Profile {
 const UserProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [activeProfileTab, setActiveProfileTab] = useState("view");
 
   useEffect(() => {
     checkAuthAndFetchProfile();
@@ -86,7 +90,14 @@ const UserProfile = () => {
       }
 
       setProfile(data);
-      setIsOwnProfile(data.user_id === session.user.id);
+      const ownProfile = data.user_id === session.user.id;
+      setIsOwnProfile(ownProfile);
+      
+      // Default to edit tab for own profile
+      if (ownProfile) {
+        const tabParam = searchParams.get("tab");
+        setActiveProfileTab(tabParam || "edit");
+      }
     } catch (error: any) {
       toast.error("Failed to load profile");
       navigate("/dashboard");
@@ -128,10 +139,6 @@ const UserProfile = () => {
     toast.info("Messaging feature coming soon!");
   };
 
-  const handleEdit = () => {
-    navigate("/edit-profile");
-  };
-
   const getCleanlinessLabel = (level: string | null) => {
     const labels: Record<string, string> = {
       "very-clean": "Very Clean",
@@ -160,6 +167,17 @@ const UserProfile = () => {
   return (
     <div className="min-h-screen bg-background">
       <RoompeerNavbar />
+      
+      {/* Mobile FAB for Edit */}
+      {isOwnProfile && activeProfileTab === "view" && (
+        <button
+          onClick={() => setActiveProfileTab("edit")}
+          className="md:hidden fixed bottom-6 right-6 z-50 bg-azul hover:bg-azul/90 text-white rounded-full p-4 shadow-lg flex items-center gap-2 transition-all"
+        >
+          <Pencil size={20} />
+          <span className="font-body font-semibold">Edit</span>
+        </button>
+      )}
       
       <div className="container mx-auto px-6 pt-24 pb-12">
         <div className="max-w-4xl mx-auto">
@@ -191,37 +209,15 @@ const UserProfile = () => {
                     {profile.age} years old
                   </p>
                 )}
-                {isOwnProfile ? (
-                  <QuickEditField
-                    value={profile.bio}
-                    displayValue={profile.occupation 
-                      ? `${profile.occupation}${profile.desired_location ? ` • ${profile.desired_location}` : ""}`
-                      : "Add your headline..."
-                    }
-                    onSave={(val) => handleQuickSave("bio", val)}
-                    type="textarea"
-                    placeholder="Add a short bio..."
-                    className="mt-2 text-muted-foreground"
-                  />
-                ) : (
-                  <p className="text-muted-foreground font-body mt-2">
-                    {profile.occupation || "Looking for a flatmate"}
-                    {profile.desired_location && ` • ${profile.desired_location}`}
-                  </p>
-                )}
+                <p className="text-muted-foreground font-body mt-2">
+                  {profile.occupation || "Looking for a flatmate"}
+                  {profile.desired_location && ` • ${profile.desired_location}`}
+                </p>
               </div>
 
               {/* Action Buttons */}
               <div className="flex gap-3">
-                {isOwnProfile ? (
-                  <Button
-                    onClick={handleEdit}
-                    className="bg-azul hover:bg-azul/90 text-white font-body font-semibold"
-                  >
-                    <Edit size={18} className="mr-2" />
-                    Edit Profile
-                  </Button>
-                ) : (
+                {!isOwnProfile && (
                   <>
                     <Button
                       onClick={handleMessage}
@@ -243,275 +239,43 @@ const UserProfile = () => {
             </div>
           </div>
 
-          {/* Profile Tabs */}
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="w-full justify-start bg-card border border-border rounded-lg p-1 mb-6">
-              <TabsTrigger value="overview" className="font-body">Overview</TabsTrigger>
-              <TabsTrigger value="preferences" className="font-body">Living Preferences</TabsTrigger>
-              <TabsTrigger value="lifestyle" className="font-body">Lifestyle</TabsTrigger>
-              <TabsTrigger value="ideal-match" className="font-body">Ideal Match</TabsTrigger>
-            </TabsList>
+          {/* View/Edit Tabs for Own Profile */}
+          {isOwnProfile ? (
+            <Tabs value={activeProfileTab} onValueChange={setActiveProfileTab} className="w-full">
+              <TabsList className="w-full justify-start bg-card border border-border rounded-lg p-1 mb-6">
+                <TabsTrigger value="view" className="font-body flex items-center gap-2">
+                  <Eye size={16} />
+                  View Profile
+                </TabsTrigger>
+                <TabsTrigger value="edit" className="font-body flex items-center gap-2">
+                  <Edit size={16} />
+                  Edit Profile
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Overview Tab */}
-            <TabsContent value="overview">
-              <div className="bg-card border border-border rounded-lg p-6 space-y-6">
-                <div>
-                  <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
-                    <User size={20} className="text-azul" />
-                    About
-                  </h3>
-                  {isOwnProfile ? (
-                    <QuickEditField
-                      value={profile.bio}
-                      onSave={(val) => handleQuickSave("bio", val)}
-                      type="textarea"
-                      placeholder="Tell others about yourself..."
-                    />
-                  ) : (
-                    <p className="text-foreground font-body leading-relaxed">
-                      {profile.bio || "No bio added yet."}
-                    </p>
-                  )}
+              <TabsContent value="view">
+                <ProfileViewContent 
+                  profile={profile} 
+                  isOwnProfile={isOwnProfile}
+                  handleQuickSave={handleQuickSave}
+                  getCleanlinessLabel={getCleanlinessLabel}
+                />
+              </TabsContent>
+
+              <TabsContent value="edit">
+                <div className="bg-card border border-border rounded-lg p-6">
+                  <EditProfile embedded />
                 </div>
-
-                <div className="border-t border-border pt-6">
-                  <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
-                    <Briefcase size={20} className="text-azul" />
-                    Occupation
-                  </h3>
-                  {isOwnProfile ? (
-                    <QuickEditField
-                      value={profile.occupation}
-                      onSave={(val) => handleQuickSave("occupation", val)}
-                      placeholder="Your occupation..."
-                    />
-                  ) : (
-                    <p className="text-foreground font-body">
-                      {profile.occupation || "Not specified"}
-                    </p>
-                  )}
-                </div>
-
-                <div className="border-t border-border pt-6">
-                  <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
-                    <Heart size={20} className="text-azul" />
-                    Interests & Hobbies
-                  </h3>
-                  {profile.hobbies && profile.hobbies.length > 0 ? (
-                    <div className="flex flex-wrap gap-2">
-                      {profile.hobbies.map((hobby, index) => (
-                        <span
-                          key={index}
-                          className="px-4 py-2 bg-blue-heath/10 text-azul rounded-full text-sm font-body font-medium"
-                        >
-                          {hobby}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground font-body">No hobbies added yet.</p>
-                  )}
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Living Preferences Tab */}
-            <TabsContent value="preferences">
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="font-heading text-xl font-bold text-[#232323] mb-6">
-                  Living Preferences
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="bg-azul/10 p-3 rounded-lg">
-                      <DollarSign size={24} className="text-azul" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground font-body">Monthly Budget</p>
-                      {isOwnProfile ? (
-                        <QuickEditField
-                          value={profile.budget}
-                          displayValue={profile.budget ? `€${profile.budget}` : undefined}
-                          onSave={(val) => handleQuickSave("budget", val)}
-                          type="number"
-                          prefix="€"
-                          placeholder="Enter budget..."
-                          className="text-lg font-semibold text-[#232323]"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold font-body text-[#232323]">
-                          {profile.budget ? `€${profile.budget}` : "Not specified"}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="bg-azul/10 p-3 rounded-lg">
-                      <MapPin size={24} className="text-azul" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground font-body">Desired Location</p>
-                      {isOwnProfile ? (
-                        <QuickEditField
-                          value={profile.desired_location}
-                          onSave={(val) => handleQuickSave("desired_location", val)}
-                          placeholder="Enter location..."
-                          className="text-lg font-semibold text-[#232323]"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold font-body text-[#232323]">
-                          {profile.desired_location || "Not specified"}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="bg-azul/10 p-3 rounded-lg">
-                      <Calendar size={24} className="text-azul" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm text-muted-foreground font-body">Move-in Date</p>
-                      {isOwnProfile ? (
-                        <QuickEditField
-                          value={profile.move_in_date}
-                          displayValue={profile.move_in_date 
-                            ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
-                                day: 'numeric', 
-                                month: 'long', 
-                                year: 'numeric' 
-                              })
-                            : undefined
-                          }
-                          onSave={(val) => handleQuickSave("move_in_date", val)}
-                          placeholder="YYYY-MM-DD"
-                          className="text-lg font-semibold text-[#232323]"
-                        />
-                      ) : (
-                        <p className="text-lg font-semibold font-body text-[#232323]">
-                          {profile.move_in_date 
-                            ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
-                                day: 'numeric', 
-                                month: 'long', 
-                                year: 'numeric' 
-                              })
-                            : "Flexible"}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="bg-azul/10 p-3 rounded-lg">
-                      <Home size={24} className="text-azul" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground font-body">Accommodation Type</p>
-                      <p className="text-lg font-semibold font-body text-[#232323] capitalize">
-                        {profile.accommodation_type || "Not specified"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Lifestyle Tab */}
-            <TabsContent value="lifestyle">
-              <div className="bg-card border border-border rounded-lg p-6 space-y-6">
-                <h3 className="font-heading text-xl font-bold text-[#232323] mb-4">
-                  Lifestyle & Habits
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className={`p-3 rounded-lg ${profile.early_riser ? 'bg-green-100' : 'bg-muted'}`}>
-                      <Sun size={24} className={profile.early_riser ? 'text-green-600' : 'text-muted-foreground'} />
-                    </div>
-                    <div>
-                      <p className="font-semibold font-body text-[#232323]">Early Riser</p>
-                      <p className="text-sm text-muted-foreground font-body">
-                        {profile.early_riser ? "Yes, I'm a morning person" : "Not particularly"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className={`p-3 rounded-lg ${profile.night_owl ? 'bg-indigo-100' : 'bg-muted'}`}>
-                      <Moon size={24} className={profile.night_owl ? 'text-indigo-600' : 'text-muted-foreground'} />
-                    </div>
-                    <div>
-                      <p className="font-semibold font-body text-[#232323]">Night Owl</p>
-                      <p className="text-sm text-muted-foreground font-body">
-                        {profile.night_owl ? "Yes, I stay up late" : "Not usually"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className={`p-3 rounded-lg ${profile.smoker ? 'bg-orange-100' : 'bg-green-100'}`}>
-                      <Cigarette size={24} className={profile.smoker ? 'text-orange-600' : 'text-green-600'} />
-                    </div>
-                    <div>
-                      <p className="font-semibold font-body text-[#232323]">Smoking</p>
-                      <p className="text-sm text-muted-foreground font-body">
-                        {profile.smoker ? "Smoker" : "Non-smoker"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="bg-azul/10 p-3 rounded-lg">
-                      <Sparkles size={24} className="text-azul" />
-                    </div>
-                    <div>
-                      <p className="font-semibold font-body text-[#232323]">Cleanliness</p>
-                      <p className="text-sm text-muted-foreground font-body">
-                        {getCleanlinessLabel(profile.cleanliness_level)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {profile.guest_preferences && (
-                  <div className="border-t border-border pt-6">
-                    <h4 className="font-heading text-lg font-bold text-[#232323] mb-3 flex items-center gap-2">
-                      <Users size={20} className="text-azul" />
-                      Guest Preferences
-                    </h4>
-                    <p className="text-foreground font-body leading-relaxed">
-                      {profile.guest_preferences}
-                    </p>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
-
-            {/* Ideal Match Tab */}
-            <TabsContent value="ideal-match">
-              <div className="bg-card border border-border rounded-lg p-6">
-                <h3 className="font-heading text-xl font-bold text-[#232323] mb-4 flex items-center gap-2">
-                  <Heart size={20} className="text-azul" />
-                  What I'm Looking For
-                </h3>
-                
-                {isOwnProfile ? (
-                  <QuickEditField
-                    value={profile.ideal_flatmate}
-                    onSave={(val) => handleQuickSave("ideal_flatmate", val)}
-                    type="textarea"
-                    placeholder="Describe your ideal flatmate..."
-                  />
-                ) : (
-                  <p className="text-foreground font-body leading-relaxed">
-                    {profile.ideal_flatmate || "No preferences specified yet."}
-                  </p>
-                )}
-              </div>
-            </TabsContent>
-          </Tabs>
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <ProfileViewContent 
+              profile={profile} 
+              isOwnProfile={isOwnProfile}
+              handleQuickSave={handleQuickSave}
+              getCleanlinessLabel={getCleanlinessLabel}
+            />
+          )}
 
           {/* Back Button */}
           <div className="mt-6">
@@ -526,6 +290,287 @@ const UserProfile = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+// Extracted profile view content component
+interface ProfileViewContentProps {
+  profile: Profile;
+  isOwnProfile: boolean;
+  handleQuickSave: (field: string, value: string) => Promise<void>;
+  getCleanlinessLabel: (level: string | null) => string;
+}
+
+const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanlinessLabel }: ProfileViewContentProps) => {
+  return (
+    <Tabs defaultValue="overview" className="w-full">
+      <TabsList className="w-full justify-start bg-card border border-border rounded-lg p-1 mb-6">
+        <TabsTrigger value="overview" className="font-body">Overview</TabsTrigger>
+        <TabsTrigger value="preferences" className="font-body">Living Preferences</TabsTrigger>
+        <TabsTrigger value="lifestyle" className="font-body">Lifestyle</TabsTrigger>
+        <TabsTrigger value="ideal-match" className="font-body">Ideal Match</TabsTrigger>
+      </TabsList>
+
+      {/* Overview Tab */}
+      <TabsContent value="overview">
+        <div className="bg-card border border-border rounded-lg p-6 space-y-6">
+          <div>
+            <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
+              <User size={20} className="text-azul" />
+              About
+            </h3>
+            {isOwnProfile ? (
+              <QuickEditField
+                value={profile.bio}
+                onSave={(val) => handleQuickSave("bio", val)}
+                type="textarea"
+                placeholder="Tell others about yourself..."
+              />
+            ) : (
+              <p className="text-foreground font-body leading-relaxed">
+                {profile.bio || "No bio added yet."}
+              </p>
+            )}
+          </div>
+
+          <div className="border-t border-border pt-6">
+            <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
+              <Briefcase size={20} className="text-azul" />
+              Occupation
+            </h3>
+            {isOwnProfile ? (
+              <QuickEditField
+                value={profile.occupation}
+                onSave={(val) => handleQuickSave("occupation", val)}
+                placeholder="Your occupation..."
+              />
+            ) : (
+              <p className="text-foreground font-body">
+                {profile.occupation || "Not specified"}
+              </p>
+            )}
+          </div>
+
+          <div className="border-t border-border pt-6">
+            <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
+              <Heart size={20} className="text-azul" />
+              Interests & Hobbies
+            </h3>
+            {profile.hobbies && profile.hobbies.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {profile.hobbies.map((hobby, index) => (
+                  <span
+                    key={index}
+                    className="px-4 py-2 bg-blue-heath/10 text-azul rounded-full text-sm font-body font-medium"
+                  >
+                    {hobby}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted-foreground font-body">No hobbies added yet.</p>
+            )}
+          </div>
+        </div>
+      </TabsContent>
+
+      {/* Living Preferences Tab */}
+      <TabsContent value="preferences">
+        <div className="bg-card border border-border rounded-lg p-6">
+          <h3 className="font-heading text-xl font-bold text-[#232323] mb-6">
+            Living Preferences
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="bg-azul/10 p-3 rounded-lg">
+                <DollarSign size={24} className="text-azul" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground font-body">Monthly Budget</p>
+                {isOwnProfile ? (
+                  <QuickEditField
+                    value={profile.budget}
+                    displayValue={profile.budget ? `€${profile.budget}` : undefined}
+                    onSave={(val) => handleQuickSave("budget", val)}
+                    type="number"
+                    prefix="€"
+                    placeholder="Enter budget..."
+                    className="text-lg font-semibold text-[#232323]"
+                  />
+                ) : (
+                  <p className="text-lg font-semibold font-body text-[#232323]">
+                    {profile.budget ? `€${profile.budget}` : "Not specified"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="bg-azul/10 p-3 rounded-lg">
+                <MapPin size={24} className="text-azul" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground font-body">Desired Location</p>
+                {isOwnProfile ? (
+                  <QuickEditField
+                    value={profile.desired_location}
+                    onSave={(val) => handleQuickSave("desired_location", val)}
+                    placeholder="Enter location..."
+                    className="text-lg font-semibold text-[#232323]"
+                  />
+                ) : (
+                  <p className="text-lg font-semibold font-body text-[#232323]">
+                    {profile.desired_location || "Not specified"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="bg-azul/10 p-3 rounded-lg">
+                <Calendar size={24} className="text-azul" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground font-body">Move-in Date</p>
+                {isOwnProfile ? (
+                  <QuickEditField
+                    value={profile.move_in_date}
+                    displayValue={profile.move_in_date 
+                      ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                        })
+                      : undefined
+                    }
+                    onSave={(val) => handleQuickSave("move_in_date", val)}
+                    placeholder="YYYY-MM-DD"
+                    className="text-lg font-semibold text-[#232323]"
+                  />
+                ) : (
+                  <p className="text-lg font-semibold font-body text-[#232323]">
+                    {profile.move_in_date 
+                      ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                        })
+                      : "Flexible"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="bg-azul/10 p-3 rounded-lg">
+                <Home size={24} className="text-azul" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground font-body">Accommodation Type</p>
+                <p className="text-lg font-semibold font-body text-[#232323] capitalize">
+                  {profile.accommodation_type || "Not specified"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </TabsContent>
+
+      {/* Lifestyle Tab */}
+      <TabsContent value="lifestyle">
+        <div className="bg-card border border-border rounded-lg p-6 space-y-6">
+          <h3 className="font-heading text-xl font-bold text-[#232323] mb-4">
+            Lifestyle & Habits
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className={`p-3 rounded-lg ${profile.early_riser ? 'bg-green-100' : 'bg-muted'}`}>
+                <Sun size={24} className={profile.early_riser ? 'text-green-600' : 'text-muted-foreground'} />
+              </div>
+              <div>
+                <p className="font-semibold font-body text-[#232323]">Early Riser</p>
+                <p className="text-sm text-muted-foreground font-body">
+                  {profile.early_riser ? "Yes, I'm a morning person" : "Not particularly"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className={`p-3 rounded-lg ${profile.night_owl ? 'bg-indigo-100' : 'bg-muted'}`}>
+                <Moon size={24} className={profile.night_owl ? 'text-indigo-600' : 'text-muted-foreground'} />
+              </div>
+              <div>
+                <p className="font-semibold font-body text-[#232323]">Night Owl</p>
+                <p className="text-sm text-muted-foreground font-body">
+                  {profile.night_owl ? "Yes, I stay up late" : "Not usually"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className={`p-3 rounded-lg ${profile.smoker ? 'bg-orange-100' : 'bg-green-100'}`}>
+                <Cigarette size={24} className={profile.smoker ? 'text-orange-600' : 'text-green-600'} />
+              </div>
+              <div>
+                <p className="font-semibold font-body text-[#232323]">Smoking</p>
+                <p className="text-sm text-muted-foreground font-body">
+                  {profile.smoker ? "Smoker" : "Non-smoker"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="bg-azul/10 p-3 rounded-lg">
+                <Sparkles size={24} className="text-azul" />
+              </div>
+              <div>
+                <p className="font-semibold font-body text-[#232323]">Cleanliness</p>
+                <p className="text-sm text-muted-foreground font-body">
+                  {getCleanlinessLabel(profile.cleanliness_level)}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {profile.guest_preferences && (
+            <div className="border-t border-border pt-6">
+              <h4 className="font-heading text-lg font-bold text-[#232323] mb-3 flex items-center gap-2">
+                <Users size={20} className="text-azul" />
+                Guest Preferences
+              </h4>
+              <p className="text-foreground font-body leading-relaxed">
+                {profile.guest_preferences}
+              </p>
+            </div>
+          )}
+        </div>
+      </TabsContent>
+
+      {/* Ideal Match Tab */}
+      <TabsContent value="ideal-match">
+        <div className="bg-card border border-border rounded-lg p-6">
+          <h3 className="font-heading text-xl font-bold text-[#232323] mb-4 flex items-center gap-2">
+            <Heart size={20} className="text-azul" />
+            What I'm Looking For
+          </h3>
+          
+          {isOwnProfile ? (
+            <QuickEditField
+              value={profile.ideal_flatmate}
+              onSave={(val) => handleQuickSave("ideal_flatmate", val)}
+              type="textarea"
+              placeholder="Describe your ideal flatmate..."
+            />
+          ) : (
+            <p className="text-foreground font-body leading-relaxed">
+              {profile.ideal_flatmate || "No preferences specified yet."}
+            </p>
+          )}
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 };
 
