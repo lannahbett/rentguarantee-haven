@@ -8,6 +8,7 @@ import { RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
 import { toast } from "sonner";
 import CookieConsentBanner from "@/components/gdpr/CookieConsentBanner";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 
 // Define a constant version that matches the script tag version
 const APP_VERSION = '20250424';
@@ -63,14 +64,16 @@ const App: React.FC = () => {
   }, [ADMIN_KEY_SEQUENCE]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <RouterProvider router={routes} />
-        <CookieConsentBanner />
-      </TooltipProvider>
-    </QueryClientProvider>
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <RouterProvider router={routes} />
+          <CookieConsentBanner />
+        </TooltipProvider>
+      </QueryClientProvider>
+    </LanguageProvider>
   );
 };
 
