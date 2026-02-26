@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, Globe, Linkedin, Shield, Cookie, Home, HelpCircle, DollarSign } from "lucide-react";
+import { MessageCircle, Globe, Linkedin, Shield, Cookie, Home, HelpCircle, DollarSign } from "lucide-react";
 const RoompeerFooter = () => {
   return <footer className="bg-youngNight text-youngNight-foreground py-12">
       <div className="container mx-auto px-6">
@@ -56,13 +56,9 @@ const RoompeerFooter = () => {
             <div>
               <h4 className="font-heading text-lg font-semibold mb-4">Contact Us</h4>
               <div className="space-y-3">
-                <a href="mailto:roompeer@gmail.com" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body">
-                  <Mail size={18} />
-                  <span>roompeer@gmail.com</span>
-                </a>
-                <a href="tel:+36204339457" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body">
-                  <Phone size={18} />
-                  <span>+36 20 589 9910</span>
+                <a href="https://chat.whatsapp.com/KHbEDVHvQzWIO7r1k9s4zl" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body">
+                  <MessageCircle size={18} />
+                  <span>WhatsApp</span>
                 </a>
                 <a href="https://www.roompeer.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-white/70 hover:text-white transition-colors font-body">
                   <Globe size={18} />
