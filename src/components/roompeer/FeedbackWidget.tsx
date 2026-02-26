@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MessageSquarePlus, Star, Send, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const FeedbackWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ const FeedbackWidget = () => {
   const [comment, setComment] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
 
   const handleSubmit = async () => {
     if (rating === 0) return;
@@ -17,12 +19,12 @@ const FeedbackWidget = () => {
 
     const { data: { session } } = await supabase.auth.getSession();
 
-    await supabase.from("feedback" as any).insert({
+    await supabase.from("feedback").insert({
       rating,
-      comment: comment || null,
+      comment: comment.trim().slice(0, 1000) || null,
       page_url: window.location.pathname,
       user_id: session?.user?.id || null,
-    } as any);
+    });
 
     setLoading(false);
     setSubmitted(true);
@@ -36,19 +38,17 @@ const FeedbackWidget = () => {
 
   return (
     <>
-      {/* FAB */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-6 z-50 bg-azul hover:bg-azul/90 text-white p-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 group"
-        aria-label="Give feedback"
+        className="fixed bottom-6 left-6 z-50 bg-primary hover:bg-primary/90 text-primary-foreground p-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 group"
+        aria-label={t("feedback.give")}
       >
         <MessageSquarePlus size={22} />
         <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-foreground text-background text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none font-body">
-          Give Feedback
+          {t("feedback.give")}
         </div>
       </button>
 
-      {/* Panel */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
@@ -62,15 +62,14 @@ const FeedbackWidget = () => {
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Check className="text-green-600" size={32} />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-2">Thank you!</h3>
-                <p className="text-muted-foreground font-body">Your feedback helps us improve Roompeer.</p>
+                <h3 className="font-heading text-xl font-bold text-foreground mb-2">{t("feedback.thanks")}</h3>
+                <p className="text-muted-foreground font-body">{t("feedback.thanksDesc")}</p>
               </div>
             ) : (
               <>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-1">How's your experience?</h3>
-                <p className="text-muted-foreground font-body text-sm mb-6">Rate and share your thoughts with us</p>
+                <h3 className="font-heading text-xl font-bold text-foreground mb-1">{t("feedback.title")}</h3>
+                <p className="text-muted-foreground font-body text-sm mb-6">{t("feedback.subtitle")}</p>
 
-                {/* Stars */}
                 <div className="flex gap-2 justify-center mb-6">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
@@ -92,21 +91,21 @@ const FeedbackWidget = () => {
                   ))}
                 </div>
 
-                {/* Comment */}
                 <textarea
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  placeholder="Tell us more (optional)..."
-                  className="w-full border border-border rounded-xl p-3 text-sm font-body resize-none h-24 focus:ring-2 focus:ring-azul/20 focus:border-azul outline-none bg-background text-foreground"
+                  placeholder={t("feedback.placeholder")}
+                  maxLength={1000}
+                  className="w-full border border-border rounded-xl p-3 text-sm font-body resize-none h-24 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-background text-foreground"
                 />
 
                 <Button
                   onClick={handleSubmit}
                   disabled={rating === 0 || loading}
-                  className="w-full mt-4 bg-azul hover:bg-azul/90 text-white font-body rounded-full"
+                  className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-body rounded-full"
                 >
                   <Send size={16} className="mr-2" />
-                  {loading ? "Sending..." : "Submit Feedback"}
+                  {loading ? t("feedback.sending") : t("feedback.submit")}
                 </Button>
               </>
             )}

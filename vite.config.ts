@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => ({
       includeAssets: ["roompeer-logo.png", "favicon.ico"],
       workbox: {
         navigateFallbackDenylist: [/^\/~oauth/],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
       },
       manifest: {
         name: "Roompeer - Find Your Perfect Flatmate",
