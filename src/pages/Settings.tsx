@@ -17,7 +17,10 @@ import {
   HelpCircle,
   Smartphone,
   Key,
-  ChevronRight
+  ChevronRight,
+  MessageSquare,
+  Flag,
+  Star
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -89,6 +92,7 @@ const Settings = () => {
     { id: "notifications", label: "Notifications", icon: Bell },
     { id: "billing", label: "Billing", icon: CreditCard },
     { id: "privacy", label: "Privacy", icon: Lock },
+    { id: "feedback", label: "Feedback & Reports", icon: MessageSquare },
     { id: "help", label: "Help & Support", icon: HelpCircle },
   ];
 
@@ -374,9 +378,11 @@ const Settings = () => {
                 </div>
               )}
 
+              {activeTab === "feedback" && <FeedbackReportsTab />}
+
               {activeTab === "help" && (
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h2 className="font-heading text-xl font-bold text-[#232323] mb-6 flex items-center gap-2">
+                  <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <HelpCircle size={20} className="text-azul" />
                     Help & Support
                   </h2>
@@ -409,6 +415,121 @@ const Settings = () => {
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+
+// Feedback & Reports Tab Component
+const FeedbackReportsTab = () => {
+  const [feedbacks, setFeedbacks] = useState<any[]>([]);
+  const [concerns, setConcerns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeSubTab, setActiveSubTab] = useState<"feedback" | "concerns">("feedback");
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    const [feedbackRes, concernsRes] = await Promise.all([
+      supabase.from("feedback").select("*").order("created_at", { ascending: false }),
+      supabase.from("concerns").select("*").order("created_at", { ascending: false }),
+    ]);
+    setFeedbacks(feedbackRes.data || []);
+    setConcerns(concernsRes.data || []);
+    setLoading(false);
+  };
+
+  const statusColor = (status: string) => {
+    switch (status) {
+      case "pending": return "bg-yellow-100 text-yellow-700";
+      case "reviewed": return "bg-blue-100 text-blue-700";
+      case "resolved": return "bg-green-100 text-green-700";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-card border border-border rounded-lg p-6">
+        <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+          <MessageSquare size={20} className="text-azul" />
+          My Feedback & Reports
+        </h2>
+
+        <div className="flex gap-2 mb-6">
+          <Button
+            variant={activeSubTab === "feedback" ? "default" : "outline"}
+            onClick={() => setActiveSubTab("feedback")}
+            size="sm"
+            className="font-body rounded-full"
+          >
+            <Star size={14} className="mr-1" /> Feedback ({feedbacks.length})
+          </Button>
+          <Button
+            variant={activeSubTab === "concerns" ? "default" : "outline"}
+            onClick={() => setActiveSubTab("concerns")}
+            size="sm"
+            className="font-body rounded-full"
+          >
+            <Flag size={14} className="mr-1" /> Concerns ({concerns.length})
+          </Button>
+        </div>
+
+        {loading ? (
+          <p className="text-muted-foreground font-body">Loading...</p>
+        ) : activeSubTab === "feedback" ? (
+          feedbacks.length === 0 ? (
+            <p className="text-muted-foreground font-body text-sm">No feedback submitted yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {feedbacks.map((fb) => (
+                <div key={fb.id} className="p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star key={s} size={14} className={s <= fb.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"} />
+                      ))}
+                    </div>
+                    <span className="text-xs text-muted-foreground font-body">
+                      {new Date(fb.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {fb.comment && <p className="text-sm text-foreground font-body">{fb.comment}</p>}
+                  {fb.page_url && <p className="text-xs text-muted-foreground font-body mt-1">Page: {fb.page_url}</p>}
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          concerns.length === 0 ? (
+            <p className="text-muted-foreground font-body text-sm">No concerns reported yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {concerns.map((c) => (
+                <div key={c.id} className="p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-body font-semibold capitalize text-foreground">
+                      {c.category.replace("_", " ")}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 text-xs rounded-full font-body ${statusColor(c.status)}`}>
+                        {c.status}
+                      </span>
+                      <span className="text-xs text-muted-foreground font-body">
+                        {new Date(c.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-foreground font-body">{c.description}</p>
+                </div>
+              ))}
+            </div>
+          )
+        )}
       </div>
     </div>
   );
