@@ -1,5 +1,6 @@
 import RoompeerNavbar from "@/components/roompeer/RoompeerNavbar";
 import RoompeerFooter from "@/components/roompeer/RoompeerFooter";
+import ReportConcernDialog from "@/components/roompeer/ReportConcernDialog";
 import { Button } from "@/components/ui/button";
 import { 
   ShieldCheck, 
@@ -186,13 +187,7 @@ const SafetyTrust = () => {
             >
               Get Started Safely
             </Button>
-            <Button
-              variant="outline"
-              className="font-body font-semibold rounded-full px-8 border-blue-heath text-blue-heath hover:bg-blue-heath/10"
-            >
-              <Flag size={18} className="mr-2" />
-              Report a Concern
-            </Button>
+            <ReportConcernDialog />
           </div>
         </div>
       </section>
