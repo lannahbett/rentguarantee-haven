@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      concerns: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          page_url: string | null
+          status: string
+          user_id: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description: string
+          id?: string
+          page_url?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          page_url?: string | null
+          status?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       discovery_settings: {
         Row: {
           accommodation_types: string[] | null
