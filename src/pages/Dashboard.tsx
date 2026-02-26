@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import FeedbackWidget from "@/components/roompeer/FeedbackWidget";
 import { supabase } from "@/integrations/supabase/client";
 import RoompeerNavbar from "@/components/roompeer/RoompeerNavbar";
 import { Button } from "@/components/ui/button";
@@ -350,6 +351,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      <FeedbackWidget />
     </div>
   );
 };

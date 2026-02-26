@@ -8,7 +8,10 @@ const RoompeerFooter = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
             {/* Brand */}
             <div className="lg:col-span-1">
-              <h3 className="font-heading text-2xl font-bold mb-4">Roompeer</h3>
+              <h3 className="font-heading text-2xl font-bold mb-4 flex items-center gap-2">
+                <img src="/roompeer-logo.png" alt="Roompeer" className="h-8 w-8 rounded-lg brightness-0 invert" />
+                Roompeer
+              </h3>
               <p className="font-body text-white/70 mb-4 max-w-md">
                 Making it simple, stress-free, and pleasant to locate a compatible flatmate.
               </p>

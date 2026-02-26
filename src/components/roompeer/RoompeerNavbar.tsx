@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Users, User, LogOut, Heart, MessageCircle, Settings, DollarSign } from "lucide-react";
+import { Menu, X, User, LogOut, Heart, MessageCircle, Settings, DollarSign } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -34,9 +34,7 @@ const RoompeerNavbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <a href="/" className="flex items-center gap-2">
-            <div className="bg-gradient-to-br from-primary to-secondary p-2 rounded-lg">
-              <Users size={24} className="text-white" />
-            </div>
+            <img src="/roompeer-logo.png" alt="Roompeer Logo" className="h-10 w-10 rounded-lg" />
             <span className="font-heading text-2xl font-bold text-foreground">
               Roompeer
             </span>
