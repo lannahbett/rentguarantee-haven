@@ -282,7 +282,81 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_public: {
+        Row: {
+          accommodation_type: string | null
+          age: number | null
+          bio: string | null
+          budget: number | null
+          cleanliness_level: string | null
+          created_at: string | null
+          desired_location: string | null
+          early_riser: boolean | null
+          full_name: string | null
+          guest_preferences: string | null
+          has_pets: boolean | null
+          hobbies: string[] | null
+          id: string | null
+          ideal_flatmate: string | null
+          move_in_date: string | null
+          night_owl: boolean | null
+          occupation: string | null
+          profile_completed: boolean | null
+          smoker: boolean | null
+          updated_at: string | null
+          user_id: string | null
+          wants_pets: boolean | null
+        }
+        Insert: {
+          accommodation_type?: string | null
+          age?: number | null
+          bio?: string | null
+          budget?: number | null
+          cleanliness_level?: string | null
+          created_at?: string | null
+          desired_location?: string | null
+          early_riser?: boolean | null
+          full_name?: string | null
+          guest_preferences?: string | null
+          has_pets?: boolean | null
+          hobbies?: string[] | null
+          id?: string | null
+          ideal_flatmate?: string | null
+          move_in_date?: string | null
+          night_owl?: boolean | null
+          occupation?: string | null
+          profile_completed?: boolean | null
+          smoker?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+          wants_pets?: boolean | null
+        }
+        Update: {
+          accommodation_type?: string | null
+          age?: number | null
+          bio?: string | null
+          budget?: number | null
+          cleanliness_level?: string | null
+          created_at?: string | null
+          desired_location?: string | null
+          early_riser?: boolean | null
+          full_name?: string | null
+          guest_preferences?: string | null
+          has_pets?: boolean | null
+          hobbies?: string[] | null
+          id?: string | null
+          ideal_flatmate?: string | null
+          move_in_date?: string | null
+          night_owl?: boolean | null
+          occupation?: string | null
+          profile_completed?: boolean | null
+          smoker?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+          wants_pets?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never
