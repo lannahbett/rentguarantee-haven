@@ -18,11 +18,9 @@ import {
   Smartphone,
   Key,
   ChevronRight,
-  MessageSquare,
-  Flag,
-  Star
 } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 // Import the EditProfile content
 import EditProfile from "./EditProfile";
@@ -33,6 +31,7 @@ const Settings = () => {
   const defaultTab = searchParams.get("tab") || "profile";
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
   
   // Security state
   const [currentPassword, setCurrentPassword] = useState("");
@@ -86,14 +85,13 @@ const Settings = () => {
   };
 
   const sidebarItems = [
-    { id: "profile", label: "Profile", icon: User },
-    { id: "discovery", label: "Discovery Preferences", icon: SettingsIcon },
-    { id: "security", label: "Account Security", icon: Shield },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "billing", label: "Billing", icon: CreditCard },
-    { id: "privacy", label: "Privacy", icon: Lock },
-    { id: "feedback", label: "Feedback & Reports", icon: MessageSquare },
-    { id: "help", label: "Help & Support", icon: HelpCircle },
+    { id: "profile", label: t("settings.profile"), icon: User },
+    { id: "discovery", label: t("settings.discovery"), icon: SettingsIcon },
+    { id: "security", label: t("settings.security"), icon: Shield },
+    { id: "notifications", label: t("settings.notifications"), icon: Bell },
+    { id: "billing", label: t("settings.billing"), icon: CreditCard },
+    { id: "privacy", label: t("settings.privacy"), icon: Lock },
+    { id: "help", label: t("settings.help"), icon: HelpCircle },
   ];
 
   if (loading) {
@@ -113,7 +111,7 @@ const Settings = () => {
       
       <div className="container mx-auto px-6 pt-24 pb-12">
         <div className="max-w-6xl mx-auto">
-          <h1 className="font-heading text-3xl font-bold text-[#232323] mb-8">Settings</h1>
+          <h1 className="font-heading text-3xl font-bold text-foreground mb-8">{t("settings.title")}</h1>
 
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Sidebar - Desktop */}
@@ -158,22 +156,22 @@ const Settings = () => {
             <div className="flex-1">
               {activeTab === "profile" && (
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h2 className="font-heading text-xl font-bold text-[#232323] mb-6">Edit Profile</h2>
+                  <h2 className="font-heading text-xl font-bold text-foreground mb-6">{t("settings.editProfile")}</h2>
                   <EditProfile embedded />
                 </div>
               )}
 
               {activeTab === "discovery" && (
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h2 className="font-heading text-xl font-bold text-[#232323] mb-4">Discovery Preferences</h2>
+                  <h2 className="font-heading text-xl font-bold text-foreground mb-4">{t("settings.discovery")}</h2>
                   <p className="text-muted-foreground font-body mb-4">
-                    Configure your matching preferences to find the perfect flatmate.
+                    {t("settings.discoveryDesc")}
                   </p>
                   <Button
                     onClick={() => navigate("/discovery-settings")}
                     className="bg-azul hover:bg-azul/90 text-white font-body"
                   >
-                    Open Discovery Settings
+                    {t("settings.openDiscovery")}
                     <ChevronRight size={16} className="ml-2" />
                   </Button>
                 </div>
@@ -183,44 +181,41 @@ const Settings = () => {
                 <div className="space-y-6">
                   {/* Change Password */}
                   <div className="bg-card border border-border rounded-lg p-6">
-                    <h2 className="font-heading text-xl font-bold text-[#232323] mb-4 flex items-center gap-2">
+                    <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                       <Key size={20} className="text-azul" />
-                      Change Password
+                      {t("settings.changePassword")}
                     </h2>
                     
                     <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
                       <div className="space-y-2">
-                        <Label htmlFor="currentPassword" className="font-body">Current Password</Label>
+                        <Label htmlFor="currentPassword" className="font-body">{t("settings.currentPassword")}</Label>
                         <Input
                           id="currentPassword"
                           type="password"
                           value={currentPassword}
                           onChange={(e) => setCurrentPassword(e.target.value)}
-                          placeholder="Enter current password"
                           className="font-body"
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="newPassword" className="font-body">New Password</Label>
+                        <Label htmlFor="newPassword" className="font-body">{t("settings.newPassword")}</Label>
                         <Input
                           id="newPassword"
                           type="password"
                           value={newPassword}
                           onChange={(e) => setNewPassword(e.target.value)}
-                          placeholder="Enter new password"
                           className="font-body"
                         />
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="confirmPassword" className="font-body">Confirm New Password</Label>
+                        <Label htmlFor="confirmPassword" className="font-body">{t("settings.confirmPassword")}</Label>
                         <Input
                           id="confirmPassword"
                           type="password"
                           value={confirmPassword}
                           onChange={(e) => setConfirmPassword(e.target.value)}
-                          placeholder="Confirm new password"
                           className="font-body"
                         />
                       </div>
@@ -230,7 +225,7 @@ const Settings = () => {
                         disabled={changingPassword}
                         className="bg-azul hover:bg-azul/90 text-white font-body"
                       >
-                        {changingPassword ? "Updating..." : "Update Password"}
+                        {changingPassword ? "Updating..." : t("settings.updatePassword")}
                       </Button>
                     </form>
 
@@ -240,24 +235,24 @@ const Settings = () => {
                         onClick={() => navigate("/forgot-password")}
                         className="text-blue-heath hover:text-azul font-body p-0"
                       >
-                        Forgot your password? Reset it here
+                        {t("settings.forgotPassword")}
                       </Button>
                     </div>
                   </div>
 
                   {/* Two-Factor Authentication */}
                   <div className="bg-card border border-border rounded-lg p-6">
-                    <h2 className="font-heading text-xl font-bold text-[#232323] mb-4 flex items-center gap-2">
+                    <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                       <Smartphone size={20} className="text-azul" />
-                      Two-Factor Authentication
+                      {t("settings.twoFactor")}
                     </h2>
                     <p className="text-muted-foreground font-body mb-4">
-                      Add an extra layer of security to your account.
+                      {t("settings.twoFactorDesc")}
                     </p>
                     <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                       <div>
-                        <p className="font-body font-semibold text-foreground">Enable 2FA</p>
-                        <p className="text-sm text-muted-foreground font-body">Coming soon</p>
+                        <p className="font-body font-semibold text-foreground">{t("settings.enable2FA")}</p>
+                        <p className="text-sm text-muted-foreground font-body">{t("settings.comingSoon")}</p>
                       </div>
                       <Switch disabled />
                     </div>
@@ -265,21 +260,21 @@ const Settings = () => {
 
                   {/* Connected Sessions */}
                   <div className="bg-card border border-border rounded-lg p-6">
-                    <h2 className="font-heading text-xl font-bold text-[#232323] mb-4 flex items-center gap-2">
+                    <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                       <Shield size={20} className="text-azul" />
-                      Connected Sessions
+                      {t("settings.connectedSessions")}
                     </h2>
                     <p className="text-muted-foreground font-body mb-4">
-                      Manage your active sessions across devices.
+                      {t("settings.sessionsDesc")}
                     </p>
                     <div className="p-4 bg-muted/50 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-body font-semibold text-foreground">Current Session</p>
-                          <p className="text-sm text-muted-foreground font-body">This device • Active now</p>
+                          <p className="font-body font-semibold text-foreground">{t("settings.currentSession")}</p>
+                          <p className="text-sm text-muted-foreground font-body">{t("settings.activeNow")}</p>
                         </div>
                         <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-body">
-                          Active
+                          {t("settings.active")}
                         </span>
                       </div>
                     </div>
@@ -289,17 +284,17 @@ const Settings = () => {
 
               {activeTab === "notifications" && (
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h2 className="font-heading text-xl font-bold text-[#232323] mb-6 flex items-center gap-2">
+                  <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Bell size={20} className="text-azul" />
-                    Notification Preferences
+                    {t("settings.notificationPrefs")}
                   </h2>
                   
                   <div className="space-y-4">
                     {[
-                      { id: "matches", label: "New Matches", desc: "Get notified when someone matches with you" },
-                      { id: "messages", label: "Messages", desc: "Receive notifications for new messages" },
-                      { id: "likes", label: "Likes", desc: "Know when someone likes your profile" },
-                      { id: "updates", label: "Product Updates", desc: "Stay informed about new features" },
+                      { id: "matches", label: t("settings.newMatches"), desc: t("settings.newMatchesDesc") },
+                      { id: "messages", label: t("settings.messages"), desc: t("settings.messagesDesc") },
+                      { id: "likes", label: t("settings.likes"), desc: t("settings.likesDesc") },
+                      { id: "updates", label: t("settings.productUpdates"), desc: t("settings.productUpdatesDesc") },
                     ].map((item) => (
                       <div key={item.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                         <div>
@@ -315,18 +310,18 @@ const Settings = () => {
 
               {activeTab === "billing" && (
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h2 className="font-heading text-xl font-bold text-[#232323] mb-4 flex items-center gap-2">
+                  <h2 className="font-heading text-xl font-bold text-foreground mb-4 flex items-center gap-2">
                     <CreditCard size={20} className="text-azul" />
-                    Billing & Subscription
+                    {t("settings.billing")}
                   </h2>
                   <p className="text-muted-foreground font-body mb-4">
-                    Manage your subscription and payment methods.
+                    {t("settings.billingDesc")}
                   </p>
                   <Button
                     onClick={() => navigate("/roompeer-billing")}
                     className="bg-azul hover:bg-azul/90 text-white font-body"
                   >
-                    View Billing Details
+                    {t("settings.viewBilling")}
                     <ChevronRight size={16} className="ml-2" />
                   </Button>
                 </div>
@@ -334,16 +329,16 @@ const Settings = () => {
 
               {activeTab === "privacy" && (
                 <div className="bg-card border border-border rounded-lg p-6">
-                  <h2 className="font-heading text-xl font-bold text-[#232323] mb-6 flex items-center gap-2">
+                  <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <Lock size={20} className="text-azul" />
-                    Privacy Settings
+                    {t("settings.privacySettings")}
                   </h2>
                   
                   <div className="space-y-4">
                     {[
-                      { id: "visibility", label: "Profile Visibility", desc: "Make your profile visible to other users" },
-                      { id: "online", label: "Show Online Status", desc: "Let others see when you're active" },
-                      { id: "read", label: "Read Receipts", desc: "Show when you've read messages" },
+                      { id: "visibility", label: t("settings.profileVisibility"), desc: t("settings.profileVisibilityDesc") },
+                      { id: "online", label: t("settings.showOnline"), desc: t("settings.showOnlineDesc") },
+                      { id: "read", label: t("settings.readReceipts"), desc: t("settings.readReceiptsDesc") },
                     ].map((item) => (
                       <div key={item.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
                         <div>
@@ -356,14 +351,14 @@ const Settings = () => {
                   </div>
 
                   <div className="mt-6 pt-6 border-t border-border">
-                    <h3 className="font-heading text-lg font-bold text-[#232323] mb-4">Legal</h3>
+                    <h3 className="font-heading text-lg font-bold text-foreground mb-4">{t("settings.legal")}</h3>
                     <div className="space-y-2">
                       <Button
                         variant="link"
                         onClick={() => navigate("/roompeer-privacy-policy")}
                         className="text-azul hover:underline font-body p-0 h-auto"
                       >
-                        Privacy Policy
+                        {t("settings.privacyPolicy")}
                       </Button>
                       <br />
                       <Button
@@ -371,20 +366,18 @@ const Settings = () => {
                         onClick={() => navigate("/terms-of-use")}
                         className="text-azul hover:underline font-body p-0 h-auto"
                       >
-                        Terms of Service
+                        {t("settings.termsOfService")}
                       </Button>
                     </div>
                   </div>
                 </div>
               )}
 
-              {activeTab === "feedback" && <FeedbackReportsTab />}
-
               {activeTab === "help" && (
                 <div className="bg-card border border-border rounded-lg p-6">
                   <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2">
                     <HelpCircle size={20} className="text-azul" />
-                    Help & Support
+                    {t("settings.help")}
                   </h2>
                   
                   <div className="space-y-4">
@@ -392,21 +385,21 @@ const Settings = () => {
                       href="/how-it-works-roompeer"
                       className="block p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                     >
-                      <p className="font-body font-semibold text-foreground">How Roompeer Works</p>
-                      <p className="text-sm text-muted-foreground font-body">Learn about finding flatmates</p>
+                      <p className="font-body font-semibold text-foreground">{t("settings.howItWorks")}</p>
+                      <p className="text-sm text-muted-foreground font-body">{t("settings.howItWorksDesc")}</p>
                     </a>
                     <a 
                       href="/safety-trust"
                       className="block p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                     >
-                      <p className="font-body font-semibold text-foreground">Safety Guidelines</p>
-                      <p className="text-sm text-muted-foreground font-body">Tips for safe meetups</p>
+                      <p className="font-body font-semibold text-foreground">{t("settings.safetyGuidelines")}</p>
+                      <p className="text-sm text-muted-foreground font-body">{t("settings.safetyGuidelinesDesc")}</p>
                     </a>
                     <a 
                       href="mailto:roompeer@gmail.com"
                       className="block p-4 bg-muted/50 rounded-lg hover:bg-muted transition-colors"
                     >
-                      <p className="font-body font-semibold text-foreground">Contact Support</p>
+                      <p className="font-body font-semibold text-foreground">{t("settings.contactSupport")}</p>
                       <p className="text-sm text-muted-foreground font-body">roompeer@gmail.com</p>
                     </a>
                   </div>
@@ -415,121 +408,6 @@ const Settings = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-
-// Feedback & Reports Tab Component
-const FeedbackReportsTab = () => {
-  const [feedbacks, setFeedbacks] = useState<any[]>([]);
-  const [concerns, setConcerns] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeSubTab, setActiveSubTab] = useState<"feedback" | "concerns">("feedback");
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    setLoading(true);
-    const [feedbackRes, concernsRes] = await Promise.all([
-      supabase.from("feedback").select("*").order("created_at", { ascending: false }),
-      supabase.from("concerns").select("*").order("created_at", { ascending: false }),
-    ]);
-    setFeedbacks(feedbackRes.data || []);
-    setConcerns(concernsRes.data || []);
-    setLoading(false);
-  };
-
-  const statusColor = (status: string) => {
-    switch (status) {
-      case "pending": return "bg-yellow-100 text-yellow-700";
-      case "reviewed": return "bg-blue-100 text-blue-700";
-      case "resolved": return "bg-green-100 text-green-700";
-      default: return "bg-muted text-muted-foreground";
-    }
-  };
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-card border border-border rounded-lg p-6">
-        <h2 className="font-heading text-xl font-bold text-foreground mb-6 flex items-center gap-2">
-          <MessageSquare size={20} className="text-azul" />
-          My Feedback & Reports
-        </h2>
-
-        <div className="flex gap-2 mb-6">
-          <Button
-            variant={activeSubTab === "feedback" ? "default" : "outline"}
-            onClick={() => setActiveSubTab("feedback")}
-            size="sm"
-            className="font-body rounded-full"
-          >
-            <Star size={14} className="mr-1" /> Feedback ({feedbacks.length})
-          </Button>
-          <Button
-            variant={activeSubTab === "concerns" ? "default" : "outline"}
-            onClick={() => setActiveSubTab("concerns")}
-            size="sm"
-            className="font-body rounded-full"
-          >
-            <Flag size={14} className="mr-1" /> Concerns ({concerns.length})
-          </Button>
-        </div>
-
-        {loading ? (
-          <p className="text-muted-foreground font-body">Loading...</p>
-        ) : activeSubTab === "feedback" ? (
-          feedbacks.length === 0 ? (
-            <p className="text-muted-foreground font-body text-sm">No feedback submitted yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {feedbacks.map((fb) => (
-                <div key={fb.id} className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} size={14} className={s <= fb.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"} />
-                      ))}
-                    </div>
-                    <span className="text-xs text-muted-foreground font-body">
-                      {new Date(fb.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  {fb.comment && <p className="text-sm text-foreground font-body">{fb.comment}</p>}
-                  {fb.page_url && <p className="text-xs text-muted-foreground font-body mt-1">Page: {fb.page_url}</p>}
-                </div>
-              ))}
-            </div>
-          )
-        ) : (
-          concerns.length === 0 ? (
-            <p className="text-muted-foreground font-body text-sm">No concerns reported yet.</p>
-          ) : (
-            <div className="space-y-3">
-              {concerns.map((c) => (
-                <div key={c.id} className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-body font-semibold capitalize text-foreground">
-                      {c.category.replace("_", " ")}
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-0.5 text-xs rounded-full font-body ${statusColor(c.status)}`}>
-                        {c.status}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-body">
-                        {new Date(c.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                  <p className="text-sm text-foreground font-body">{c.description}</p>
-                </div>
-              ))}
-            </div>
-          )
-        )}
       </div>
     </div>
   );

@@ -25,6 +25,7 @@ import {
   Edit
 } from "lucide-react";
 import { toast } from "sonner";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 interface Profile {
   id: string;
@@ -56,6 +57,7 @@ const UserProfile = () => {
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [activeProfileTab, setActiveProfileTab] = useState("view");
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAuthAndFetchProfile();
@@ -81,7 +83,6 @@ const UserProfile = () => {
       const isViewingOther = !!id;
       let query;
       if (isViewingOther) {
-        // Exclude email for other users' profiles
         query = supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("id", id);
       } else {
         query = supabase.from("profiles").select("*").eq("user_id", session.user.id);
@@ -101,7 +102,6 @@ const UserProfile = () => {
       const ownProfile = (data as any).user_id === session.user.id;
       setIsOwnProfile(ownProfile);
       
-      // Default to edit tab for own profile
       if (ownProfile) {
         const tabParam = searchParams.get("tab");
         setActiveProfileTab(tabParam || "edit");
@@ -154,7 +154,7 @@ const UserProfile = () => {
       "moderate": "Moderate",
       "relaxed": "Relaxed"
     };
-    return level ? labels[level] || level : "Not specified";
+    return level ? labels[level] || level : t("profile.notSpecified");
   };
 
   if (loading) {
@@ -162,7 +162,7 @@ const UserProfile = () => {
       <div className="min-h-screen bg-background">
         <RoompeerNavbar />
         <div className="container mx-auto px-6 pt-24 pb-12">
-          <p className="text-muted-foreground font-body">Loading profile...</p>
+          <p className="text-muted-foreground font-body">{t("profile.loading")}</p>
         </div>
       </div>
     );
@@ -183,7 +183,7 @@ const UserProfile = () => {
           className="md:hidden fixed bottom-6 right-6 z-50 bg-azul hover:bg-azul/90 text-white rounded-full p-4 shadow-lg flex items-center gap-2 transition-all"
         >
           <Pencil size={20} />
-          <span className="font-body font-semibold">Edit</span>
+          <span className="font-body font-semibold">{t("profile.editProfile")}</span>
         </button>
       )}
       
@@ -192,7 +192,6 @@ const UserProfile = () => {
           {/* Profile Header */}
           <div className="bg-card border border-border rounded-lg p-8 mb-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-              {/* Profile Picture */}
               <div className="relative group">
                 <div className="bg-gradient-to-br from-azul to-blue-heath p-6 rounded-full">
                   <User size={48} className="text-white" />
@@ -207,23 +206,21 @@ const UserProfile = () => {
                 )}
               </div>
               
-              {/* Name & Headline */}
               <div className="flex-1">
-                <h1 className="font-heading text-3xl font-bold text-[#232323]">
+                <h1 className="font-heading text-3xl font-bold text-foreground">
                   {profile.full_name}
                 </h1>
                 {profile.age && (
                   <p className="text-lg text-muted-foreground font-body mt-1">
-                    {profile.age} years old
+                    {profile.age} {t("profile.yearsOld")}
                   </p>
                 )}
                 <p className="text-muted-foreground font-body mt-2">
-                  {profile.occupation || "Looking for a flatmate"}
+                  {profile.occupation || t("profile.lookingForFlatmate")}
                   {profile.desired_location && ` • ${profile.desired_location}`}
                 </p>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3">
                 {!isOwnProfile && (
                   <>
@@ -232,7 +229,7 @@ const UserProfile = () => {
                       className="bg-azul hover:bg-azul/90 text-white font-body font-semibold"
                     >
                       <MessageCircle size={18} className="mr-2" />
-                      Message
+                      {t("profile.message")}
                     </Button>
                     <Button
                       variant="outline"
@@ -253,11 +250,11 @@ const UserProfile = () => {
               <TabsList className="w-full justify-start bg-card border border-border rounded-lg p-1 mb-6">
                 <TabsTrigger value="view" className="font-body flex items-center gap-2">
                   <Eye size={16} />
-                  View Profile
+                  {t("profile.viewProfile")}
                 </TabsTrigger>
                 <TabsTrigger value="edit" className="font-body flex items-center gap-2">
                   <Edit size={16} />
-                  Edit Profile
+                  {t("profile.editProfile")}
                 </TabsTrigger>
               </TabsList>
 
@@ -267,6 +264,7 @@ const UserProfile = () => {
                   isOwnProfile={isOwnProfile}
                   handleQuickSave={handleQuickSave}
                   getCleanlinessLabel={getCleanlinessLabel}
+                  t={t}
                 />
               </TabsContent>
 
@@ -282,17 +280,17 @@ const UserProfile = () => {
               isOwnProfile={isOwnProfile}
               handleQuickSave={handleQuickSave}
               getCleanlinessLabel={getCleanlinessLabel}
+              t={t}
             />
           )}
 
-          {/* Back Button */}
           <div className="mt-6">
             <Button
               variant="outline"
               onClick={() => navigate("/dashboard")}
               className="font-body"
             >
-              ← Back to Dashboard
+              {t("profile.backToDashboard")}
             </Button>
           </div>
         </div>
@@ -307,32 +305,33 @@ interface ProfileViewContentProps {
   isOwnProfile: boolean;
   handleQuickSave: (field: string, value: string) => Promise<void>;
   getCleanlinessLabel: (level: string | null) => string;
+  t: (key: any) => string;
 }
 
-const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanlinessLabel }: ProfileViewContentProps) => {
+const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanlinessLabel, t }: ProfileViewContentProps) => {
   return (
     <Tabs defaultValue="overview" className="w-full">
       <TabsList className="w-full justify-start bg-card border border-border rounded-lg p-1 mb-6">
-        <TabsTrigger value="overview" className="font-body">Overview</TabsTrigger>
-        <TabsTrigger value="preferences" className="font-body">Living Preferences</TabsTrigger>
-        <TabsTrigger value="lifestyle" className="font-body">Lifestyle</TabsTrigger>
-        <TabsTrigger value="ideal-match" className="font-body">Ideal Match</TabsTrigger>
+        <TabsTrigger value="overview" className="font-body">{t("profile.overview")}</TabsTrigger>
+        <TabsTrigger value="preferences" className="font-body">{t("profile.preferences")}</TabsTrigger>
+        <TabsTrigger value="lifestyle" className="font-body">{t("profile.lifestyle")}</TabsTrigger>
+        <TabsTrigger value="ideal-match" className="font-body">{t("profile.idealMatch")}</TabsTrigger>
       </TabsList>
 
       {/* Overview Tab */}
       <TabsContent value="overview">
         <div className="bg-card border border-border rounded-lg p-6 space-y-6">
           <div>
-            <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
+            <h3 className="font-heading text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <User size={20} className="text-azul" />
-              About
+              {t("profile.about")}
             </h3>
             {isOwnProfile ? (
               <QuickEditField
                 value={profile.bio}
                 onSave={(val) => handleQuickSave("bio", val)}
                 type="textarea"
-                placeholder="Tell others about yourself..."
+                placeholder={t("profile.aboutPlaceholder")}
               />
             ) : (
               <p className="text-foreground font-body leading-relaxed">
@@ -342,27 +341,27 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
           </div>
 
           <div className="border-t border-border pt-6">
-            <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
+            <h3 className="font-heading text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Briefcase size={20} className="text-azul" />
-              Occupation
+              {t("profile.occupation")}
             </h3>
             {isOwnProfile ? (
               <QuickEditField
                 value={profile.occupation}
                 onSave={(val) => handleQuickSave("occupation", val)}
-                placeholder="Your occupation..."
+                placeholder={t("profile.occupation")}
               />
             ) : (
               <p className="text-foreground font-body">
-                {profile.occupation || "Not specified"}
+                {profile.occupation || t("profile.notSpecified")}
               </p>
             )}
           </div>
 
           <div className="border-t border-border pt-6">
-            <h3 className="font-heading text-xl font-bold text-[#232323] mb-3 flex items-center gap-2">
+            <h3 className="font-heading text-xl font-bold text-foreground mb-3 flex items-center gap-2">
               <Heart size={20} className="text-azul" />
-              Interests & Hobbies
+              {t("profile.interests")}
             </h3>
             {profile.hobbies && profile.hobbies.length > 0 ? (
               <div className="flex flex-wrap gap-2">
@@ -376,7 +375,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                 ))}
               </div>
             ) : (
-              <p className="text-muted-foreground font-body">No hobbies added yet.</p>
+              <p className="text-muted-foreground font-body">{t("profile.noHobbies")}</p>
             )}
           </div>
         </div>
@@ -385,8 +384,8 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
       {/* Living Preferences Tab */}
       <TabsContent value="preferences">
         <div className="bg-card border border-border rounded-lg p-6">
-          <h3 className="font-heading text-xl font-bold text-[#232323] mb-6">
-            Living Preferences
+          <h3 className="font-heading text-xl font-bold text-foreground mb-6">
+            {t("profile.livingPrefs")}
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -395,7 +394,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                 <DollarSign size={24} className="text-azul" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-muted-foreground font-body">Monthly Budget</p>
+                <p className="text-sm text-muted-foreground font-body">{t("profile.monthlyBudget")}</p>
                 {isOwnProfile ? (
                   <QuickEditField
                     value={profile.budget}
@@ -403,12 +402,12 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                     onSave={(val) => handleQuickSave("budget", val)}
                     type="number"
                     prefix="€"
-                    placeholder="Enter budget..."
-                    className="text-lg font-semibold text-[#232323]"
+                    placeholder={t("profile.monthlyBudget")}
+                    className="text-lg font-semibold text-foreground"
                   />
                 ) : (
-                  <p className="text-lg font-semibold font-body text-[#232323]">
-                    {profile.budget ? `€${profile.budget}` : "Not specified"}
+                  <p className="text-lg font-semibold font-body text-foreground">
+                    {profile.budget ? `€${profile.budget}` : t("profile.notSpecified")}
                   </p>
                 )}
               </div>
@@ -419,17 +418,17 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                 <MapPin size={24} className="text-azul" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-muted-foreground font-body">Desired Location</p>
+                <p className="text-sm text-muted-foreground font-body">{t("profile.desiredLocation")}</p>
                 {isOwnProfile ? (
                   <QuickEditField
                     value={profile.desired_location}
                     onSave={(val) => handleQuickSave("desired_location", val)}
-                    placeholder="Enter location..."
-                    className="text-lg font-semibold text-[#232323]"
+                    placeholder={t("profile.desiredLocation")}
+                    className="text-lg font-semibold text-foreground"
                   />
                 ) : (
-                  <p className="text-lg font-semibold font-body text-[#232323]">
-                    {profile.desired_location || "Not specified"}
+                  <p className="text-lg font-semibold font-body text-foreground">
+                    {profile.desired_location || t("profile.notSpecified")}
                   </p>
                 )}
               </div>
@@ -440,7 +439,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                 <Calendar size={24} className="text-azul" />
               </div>
               <div className="flex-1">
-                <p className="text-sm text-muted-foreground font-body">Move-in Date</p>
+                <p className="text-sm text-muted-foreground font-body">{t("profile.moveInDate")}</p>
                 {isOwnProfile ? (
                   <QuickEditField
                     value={profile.move_in_date}
@@ -454,17 +453,17 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                     }
                     onSave={(val) => handleQuickSave("move_in_date", val)}
                     placeholder="YYYY-MM-DD"
-                    className="text-lg font-semibold text-[#232323]"
+                    className="text-lg font-semibold text-foreground"
                   />
                 ) : (
-                  <p className="text-lg font-semibold font-body text-[#232323]">
+                  <p className="text-lg font-semibold font-body text-foreground">
                     {profile.move_in_date 
                       ? new Date(profile.move_in_date).toLocaleDateString('en-GB', { 
                           day: 'numeric', 
                           month: 'long', 
                           year: 'numeric' 
                         })
-                      : "Flexible"}
+                      : t("profile.flexible")}
                   </p>
                 )}
               </div>
@@ -475,9 +474,9 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                 <Home size={24} className="text-azul" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground font-body">Accommodation Type</p>
-                <p className="text-lg font-semibold font-body text-[#232323] capitalize">
-                  {profile.accommodation_type || "Not specified"}
+                <p className="text-sm text-muted-foreground font-body">{t("profile.accommodationType")}</p>
+                <p className="text-lg font-semibold font-body text-foreground capitalize">
+                  {profile.accommodation_type || t("profile.notSpecified")}
                 </p>
               </div>
             </div>
@@ -487,81 +486,71 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
 
       {/* Lifestyle Tab */}
       <TabsContent value="lifestyle">
-        <div className="bg-card border border-border rounded-lg p-6 space-y-6">
-          <h3 className="font-heading text-xl font-bold text-[#232323] mb-4">
-            Lifestyle & Habits
+        <div className="bg-card border border-border rounded-lg p-6">
+          <h3 className="font-heading text-xl font-bold text-foreground mb-6">
+            {t("profile.lifestyle")}
           </h3>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-              <div className={`p-3 rounded-lg ${profile.early_riser ? 'bg-green-100' : 'bg-muted'}`}>
-                <Sun size={24} className={profile.early_riser ? 'text-green-600' : 'text-muted-foreground'} />
-              </div>
+              <Sun size={20} className="text-azul" />
               <div>
-                <p className="font-semibold font-body text-[#232323]">Early Riser</p>
-                <p className="text-sm text-muted-foreground font-body">
-                  {profile.early_riser ? "Yes, I'm a morning person" : "Not particularly"}
+                <p className="text-sm text-muted-foreground font-body">{t("profile.earlyRiser")}</p>
+                <p className="font-semibold font-body text-foreground">
+                  {profile.early_riser ? t("profile.yes") : t("profile.no")}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-              <div className={`p-3 rounded-lg ${profile.night_owl ? 'bg-indigo-100' : 'bg-muted'}`}>
-                <Moon size={24} className={profile.night_owl ? 'text-indigo-600' : 'text-muted-foreground'} />
-              </div>
+              <Moon size={20} className="text-azul" />
               <div>
-                <p className="font-semibold font-body text-[#232323]">Night Owl</p>
-                <p className="text-sm text-muted-foreground font-body">
-                  {profile.night_owl ? "Yes, I stay up late" : "Not usually"}
+                <p className="text-sm text-muted-foreground font-body">{t("profile.nightOwl")}</p>
+                <p className="font-semibold font-body text-foreground">
+                  {profile.night_owl ? t("profile.yes") : t("profile.no")}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-              <div className={`p-3 rounded-lg ${profile.smoker ? 'bg-orange-100' : 'bg-green-100'}`}>
-                <Cigarette size={24} className={profile.smoker ? 'text-orange-600' : 'text-green-600'} />
-              </div>
+              <Cigarette size={20} className="text-azul" />
               <div>
-                <p className="font-semibold font-body text-[#232323]">Smoking</p>
-                <p className="text-sm text-muted-foreground font-body">
-                  {profile.smoker ? "Smoker" : "Non-smoker"}
+                <p className="text-sm text-muted-foreground font-body">{t("profile.smoker")}</p>
+                <p className="font-semibold font-body text-foreground">
+                  {profile.smoker ? t("profile.yes") : t("profile.no")}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-              <div className="bg-azul/10 p-3 rounded-lg">
-                <Sparkles size={24} className="text-azul" />
-              </div>
+              <Sparkles size={20} className="text-azul" />
               <div>
-                <p className="font-semibold font-body text-[#232323]">Cleanliness</p>
-                <p className="text-sm text-muted-foreground font-body">
+                <p className="text-sm text-muted-foreground font-body">{t("profile.cleanliness")}</p>
+                <p className="font-semibold font-body text-foreground">
                   {getCleanlinessLabel(profile.cleanliness_level)}
                 </p>
               </div>
             </div>
-          </div>
 
-          {profile.guest_preferences && (
-            <div className="border-t border-border pt-6">
-              <h4 className="font-heading text-lg font-bold text-[#232323] mb-3 flex items-center gap-2">
-                <Users size={20} className="text-azul" />
-                Guest Preferences
-              </h4>
-              <p className="text-foreground font-body leading-relaxed">
-                {profile.guest_preferences}
-              </p>
+            <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg md:col-span-2">
+              <Users size={20} className="text-azul" />
+              <div>
+                <p className="text-sm text-muted-foreground font-body">{t("profile.guestPolicy")}</p>
+                <p className="font-semibold font-body text-foreground capitalize">
+                  {profile.guest_preferences || t("profile.notSpecified")}
+                </p>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </TabsContent>
 
       {/* Ideal Match Tab */}
       <TabsContent value="ideal-match">
         <div className="bg-card border border-border rounded-lg p-6">
-          <h3 className="font-heading text-xl font-bold text-[#232323] mb-4 flex items-center gap-2">
+          <h3 className="font-heading text-xl font-bold text-foreground mb-3 flex items-center gap-2">
             <Heart size={20} className="text-azul" />
-            What I'm Looking For
+            {t("profile.idealMatchDesc")}
           </h3>
           
           {isOwnProfile ? (
@@ -569,11 +558,11 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
               value={profile.ideal_flatmate}
               onSave={(val) => handleQuickSave("ideal_flatmate", val)}
               type="textarea"
-              placeholder="Describe your ideal flatmate..."
+              placeholder={t("profile.idealMatch")}
             />
           ) : (
             <p className="text-foreground font-body leading-relaxed">
-              {profile.ideal_flatmate || "No preferences specified yet."}
+              {profile.ideal_flatmate || t("profile.noIdealMatch")}
             </p>
           )}
         </div>

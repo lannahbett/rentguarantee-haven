@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Send, MoreVertical, User, Flag, UserMinus, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 interface Match {
   id: string;
@@ -54,6 +55,7 @@ const Matches = () => {
   const [loading, setLoading] = useState(true);
   const [showUnmatchDialog, setShowUnmatchDialog] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAuthAndFetch();
@@ -64,7 +66,6 @@ const Matches = () => {
       fetchMessages(selectedMatch.id);
       markMessagesAsRead(selectedMatch.id);
       
-      // Subscribe to new messages
       const channel = supabase
         .channel(`messages-${selectedMatch.id}`)
         .on(
@@ -132,7 +133,6 @@ const Matches = () => {
         .eq('user_id', matchedUserId)
         .single();
 
-      // Get last message
       const { data: lastMsg } = await supabase
         .from('messages')
         .select('content, created_at')
@@ -141,7 +141,6 @@ const Matches = () => {
         .limit(1)
         .single();
 
-      // Get unread count
       const { count } = await supabase
         .from('messages')
         .select('*', { count: 'exact', head: true })
@@ -192,7 +191,6 @@ const Matches = () => {
       .neq('sender_id', userId)
       .is('read_at', null);
 
-    // Update local state
     setMatches(prev => prev.map(m => 
       m.id === matchId ? { ...m, unreadCount: 0 } : m
     ));
@@ -216,7 +214,6 @@ const Matches = () => {
 
     setNewMessage('');
     
-    // Update last message in matches list
     setMatches(prev => prev.map(m => 
       m.id === selectedMatch.id 
         ? { ...m, lastMessage: newMessage.trim(), lastMessageTime: new Date().toISOString() }
@@ -227,7 +224,6 @@ const Matches = () => {
   const handleUnmatch = async () => {
     if (!selectedMatch) return;
 
-    // Delete the match (messages will cascade delete)
     const { error } = await supabase
       .from('matches')
       .delete()
@@ -285,18 +281,18 @@ const Matches = () => {
         {/* Left Sidebar - Matches List */}
         <div className="w-full md:w-80 lg:w-96 border-r border-border bg-card overflow-y-auto">
           <div className="p-4 border-b border-border">
-            <h2 className="text-xl font-bold text-foreground">Messages</h2>
+            <h2 className="text-xl font-bold text-foreground">{t("matches.messages")}</h2>
           </div>
           
           {matches.length === 0 ? (
             <div className="p-8 text-center">
               <MessageCircle className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No matches yet</p>
+              <p className="text-muted-foreground">{t("matches.noMatches")}</p>
               <Button 
                 onClick={() => navigate('/browse')} 
                 className="mt-4 bg-primary hover:bg-primary/90"
               >
-                Start Browsing
+                {t("matches.startBrowsing")}
               </Button>
             </div>
           ) : (
@@ -326,7 +322,7 @@ const Matches = () => {
                       )}
                     </div>
                     <p className={`text-sm truncate ${match.unreadCount > 0 ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-                      {match.lastMessage || 'Start a conversation'}
+                      {match.lastMessage || t("matches.startConversation")}
                     </p>
                   </div>
                   {match.unreadCount > 0 && (
@@ -355,7 +351,7 @@ const Matches = () => {
                   <div>
                     <h3 className="font-semibold text-foreground">{selectedMatch.matchedUser.full_name}</h3>
                     <p className="text-sm text-muted-foreground truncate max-w-xs">
-                      {selectedMatch.matchedUser.bio || 'No bio'}
+                      {selectedMatch.matchedUser.bio || t("matches.noBio")}
                     </p>
                   </div>
                 </div>
@@ -369,18 +365,18 @@ const Matches = () => {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => navigate(`/profile/${selectedMatch.matchedUser.id}`)}>
                       <User className="h-4 w-4 mr-2" />
-                      View Profile
+                      {t("matches.viewProfile")}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={handleReport}>
                       <Flag className="h-4 w-4 mr-2" />
-                      Report User
+                      {t("matches.reportUser")}
                     </DropdownMenuItem>
                     <DropdownMenuItem 
                       onClick={() => setShowUnmatchDialog(true)}
                       className="text-destructive"
                     >
                       <UserMinus className="h-4 w-4 mr-2" />
-                      Unmatch
+                      {t("matches.unmatch")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -390,7 +386,7 @@ const Matches = () => {
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
-                    <p>No messages yet. Say hello! 👋</p>
+                    <p>{t("matches.noMessages")}</p>
                   </div>
                 ) : (
                   messages.map((message) => (
@@ -401,7 +397,7 @@ const Matches = () => {
                       <div
                         className={`max-w-[70%] px-4 py-2 rounded-2xl ${
                           message.sender_id === userId
-                            ? 'bg-[#5A74FF] text-white rounded-br-md'
+                            ? 'bg-azul text-white rounded-br-md'
                             : 'bg-muted text-foreground rounded-bl-md'
                         }`}
                       >
@@ -424,7 +420,7 @@ const Matches = () => {
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={t("matches.typeMessage")}
                     className="flex-1"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
@@ -447,7 +443,7 @@ const Matches = () => {
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <MessageCircle className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p className="text-lg">Select a conversation to start messaging</p>
+                <p className="text-lg">{t("matches.selectConversation")}</p>
               </div>
             </div>
           )}
@@ -458,15 +454,15 @@ const Matches = () => {
       <AlertDialog open={showUnmatchDialog} onOpenChange={setShowUnmatchDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unmatch {selectedMatch?.matchedUser.full_name}?</AlertDialogTitle>
+            <AlertDialogTitle>{t("matches.unmatch")} {selectedMatch?.matchedUser.full_name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will remove your match and delete all messages. This action cannot be undone.
+              {t("matches.unmatchDesc")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{t("matches.cancel")}</AlertDialogCancel>
             <AlertDialogAction onClick={handleUnmatch} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Unmatch
+              {t("matches.unmatchConfirm")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
