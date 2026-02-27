@@ -157,7 +157,7 @@ const BrowseMatch = () => {
         supabase.from("likes").select("liked_id").eq("liker_id", userId),
         supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
         supabase.from("discovery_settings").select("*").eq("user_id", userId).maybeSingle(),
-        supabase.from("profiles").select("*").eq("profile_completed", true).neq("user_id", userId),
+        supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("profile_completed", true).neq("user_id", userId),
       ]);
 
       const likedIds = likesRes.data?.map(l => l.liked_id) || [];
