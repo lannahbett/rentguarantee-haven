@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Globe } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { Language, languageLabels, languageFlags } from "@/i18n/translations";
+import { Language, languageLabels } from "@/i18n/translations";
 
 const LanguageSwitcher = () => {
   const { language, setLanguage } = useLanguage();
@@ -26,12 +26,11 @@ const LanguageSwitcher = () => {
         aria-label="Change language"
       >
         <Globe size={16} className="text-primary" />
-        <span>{languageFlags[language]}</span>
-        <span className="hidden sm:inline">{languageLabels[language]}</span>
+        <span className="font-semibold">{languageLabels[language]}</span>
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 bg-card border border-border rounded-xl shadow-xl py-2 min-w-[160px] z-50 animate-scale-in">
+        <div className="absolute right-0 top-full mt-2 bg-card border border-border rounded-xl shadow-xl py-2 min-w-[120px] z-50 animate-scale-in">
           {languages.map((lang) => (
             <button
               key={lang}
@@ -40,8 +39,7 @@ const LanguageSwitcher = () => {
                 language === lang ? "text-primary font-semibold bg-primary/5" : "text-foreground"
               }`}
             >
-              <span className="text-lg">{languageFlags[lang]}</span>
-              <span>{languageLabels[lang]}</span>
+              <span className="font-semibold">{languageLabels[lang]}</span>
             </button>
           ))}
         </div>

@@ -1,45 +1,28 @@
 import React from "react";
 import { Shield, Users, Lightbulb, Heart, Globe } from "lucide-react";
-
-const values = [
-  {
-    icon: Shield,
-    title: "Trust & Transparency",
-    description: "We prioritize honesty and openness in every interaction, ensuring a safe and reliable platform for all users.",
-  },
-  {
-    icon: Users,
-    title: "User-Centered",
-    description: "Your needs come first. We design every feature with our community's best interests in mind.",
-  },
-  {
-    icon: Lightbulb,
-    title: "Innovation",
-    description: "We continuously improve and innovate to make flatmate finding easier, smarter, and more effective.",
-  },
-  {
-    icon: Heart,
-    title: "Community",
-    description: "Building meaningful connections and fostering a supportive community of compatible flatmates.",
-  },
-  {
-    icon: Globe,
-    title: "Accessibility",
-    description: "Making our platform available and easy to use for everyone, anywhere, at any time.",
-  },
-];
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const CoreValues = () => {
+  const { t } = useLanguage();
+
+  const values = [
+    { icon: Shield, titleKey: "cv.trust" as const, descKey: "cv.trustDesc" as const },
+    { icon: Users, titleKey: "cv.userCentered" as const, descKey: "cv.userCenteredDesc" as const },
+    { icon: Lightbulb, titleKey: "cv.innovation" as const, descKey: "cv.innovationDesc" as const },
+    { icon: Heart, titleKey: "cv.community" as const, descKey: "cv.communityDesc" as const },
+    { icon: Globe, titleKey: "cv.accessibility" as const, descKey: "cv.accessibilityDesc" as const },
+  ];
+
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="font-heading text-4xl md:text-5xl font-bold mb-4 text-foreground">
-              Our Core Values
+              {t("cv.title")}
             </h2>
             <p className="font-body text-xl text-muted-foreground max-w-2xl mx-auto">
-              The principles that guide everything we do at Roompeer
+              {t("cv.subtitle")}
             </p>
           </div>
           
@@ -55,10 +38,10 @@ const CoreValues = () => {
                     <Icon size={28} />
                   </div>
                   <h3 className="font-heading text-xl font-bold mb-3 text-foreground">
-                    {value.title}
+                    {t(value.titleKey)}
                   </h3>
                   <p className="font-body text-muted-foreground leading-relaxed">
-                    {value.description}
+                    {t(value.descKey)}
                   </p>
                 </div>
               );
