@@ -85,7 +85,7 @@ const UserProfile = () => {
       if (isViewingOther) {
         query = supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("id", id);
       } else {
-        query = supabase.from("profiles").select("*").eq("user_id", session.user.id);
+        query = supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("user_id", session.user.id);
       }
 
       const { data, error } = await query.maybeSingle();

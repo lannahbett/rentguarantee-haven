@@ -199,6 +199,11 @@ const Matches = () => {
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedMatch || !userId) return;
 
+    if (newMessage.trim().length > 5000) {
+      toast.error('Message too long (max 5000 characters)');
+      return;
+    }
+
     const { error } = await supabase
       .from('messages')
       .insert({
