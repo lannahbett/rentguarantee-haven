@@ -40,10 +40,10 @@ const FeedbackWidget = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 left-6 z-50 bg-primary hover:bg-primary/90 text-primary-foreground p-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 group"
+        className="fixed bottom-20 left-4 z-40 bg-primary hover:bg-primary/90 text-primary-foreground p-2.5 rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 group opacity-70 hover:opacity-100"
         aria-label={t("feedback.give")}
       >
-        <MessageSquarePlus size={22} />
+        <MessageSquarePlus size={18} />
         <div className="absolute bottom-full left-0 mb-2 px-3 py-2 bg-foreground text-background text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none font-body">
           {t("feedback.give")}
         </div>
