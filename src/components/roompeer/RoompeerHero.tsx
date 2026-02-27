@@ -98,7 +98,7 @@ const RoompeerHero = () => {
                 ))}
               </div>
               <p className="text-sm text-muted-foreground font-body">
-                <span className="font-semibold text-foreground">500+</span> {t("hero.matched")}
+                <span className="font-semibold text-foreground">300+</span> {t("hero.matched")}
               </p>
             </div>
           </div>
