@@ -61,6 +61,13 @@ const UserProfile = () => {
     checkAuthAndFetchProfile();
   }, [id]);
 
+  // Re-fetch profile when switching to "view" tab to reflect edits
+  useEffect(() => {
+    if (activeProfileTab === "view" && isOwnProfile) {
+      checkAuthAndFetchProfile();
+    }
+  }, [activeProfileTab]);
+
   const checkAuthAndFetchProfile = async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {

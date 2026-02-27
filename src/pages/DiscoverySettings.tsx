@@ -103,8 +103,8 @@ const DiscoverySettings = () => {
 
       if (error) throw error;
 
-      toast.success("Preferences saved successfully!");
-      navigate("/browse");
+      toast.success("Preferences saved! Redirecting to matches...");
+      setTimeout(() => navigate("/browse"), 1500);
     } catch (error: any) {
       toast.error("Failed to save preferences");
     } finally {
@@ -426,15 +426,20 @@ const DiscoverySettings = () => {
             </div>
           </section>
 
-          {/* Save Button */}
-          <Button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full bg-azul hover:bg-azul/90 text-white font-body font-semibold h-12"
-          >
-            <Save size={18} className="mr-2" />
-            {saving ? "Saving..." : "Save Preferences"}
-          </Button>
+          {/* Sticky Save Button */}
+          <div className="sticky bottom-4 z-10 pt-4">
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="w-full bg-azul hover:bg-azul/90 text-white font-body font-semibold h-12 shadow-lg"
+            >
+              <Save size={18} className="mr-2" />
+              {saving ? "Saving & Finding Matches..." : "Save & Find Matches"}
+            </Button>
+            <p className="text-center text-xs text-muted-foreground font-body mt-2">
+              Your filters will be applied to your match results
+            </p>
+          </div>
         </div>
       </div>
     </div>
