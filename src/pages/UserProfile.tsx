@@ -71,12 +71,13 @@ const UserProfile = () => {
     setCurrentUserId(session.user.id);
 
     try {
-      let query = supabase.from("profiles").select("*");
-      
-      if (id) {
-        query = query.eq("id", id);
+      const isViewingOther = !!id;
+      let query;
+      if (isViewingOther) {
+        // Exclude email for other users' profiles
+        query = supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("id", id);
       } else {
-        query = query.eq("user_id", session.user.id);
+        query = supabase.from("profiles").select("*").eq("user_id", session.user.id);
       }
 
       const { data, error } = await query.maybeSingle();
@@ -89,8 +90,8 @@ const UserProfile = () => {
         return;
       }
 
-      setProfile(data);
-      const ownProfile = data.user_id === session.user.id;
+      setProfile(data as any);
+      const ownProfile = (data as any).user_id === session.user.id;
       setIsOwnProfile(ownProfile);
       
       // Default to edit tab for own profile
