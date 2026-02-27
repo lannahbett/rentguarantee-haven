@@ -89,7 +89,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
