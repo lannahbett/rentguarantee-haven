@@ -31,12 +31,29 @@ const Onboarding = () => {
   const [idealFlatmate, setIdealFlatmate] = useState("");
 
   useEffect(() => {
-    // Check if user is logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const ensureProfileExists = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         navigate("/auth");
+        return;
       }
-    });
+      // Create profile if it doesn't exist yet (e.g., after email confirmation)
+      const { data: existing } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .maybeSingle();
+      
+      if (!existing) {
+        const fullName = session.user.user_metadata?.full_name || session.user.email?.split("@")[0] || "User";
+        await supabase.from("profiles").insert({
+          user_id: session.user.id,
+          email: session.user.email || "",
+          full_name: fullName,
+        });
+      }
+    };
+    ensureProfileExists();
   }, [navigate]);
 
   const progress = (step / 4) * 100;

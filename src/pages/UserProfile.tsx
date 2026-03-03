@@ -22,7 +22,8 @@ import {
   Heart,
   Pencil,
   Eye,
-  Edit
+  Edit,
+  CheckCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -81,16 +82,37 @@ const UserProfile = () => {
 
     try {
       const isViewingOther = !!id;
-      let query;
+      let data: any = null;
+      
       if (isViewingOther) {
-        query = supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("id", id);
+        // Use profiles_public view for other users (no RLS restriction, no email exposed)
+        // Try by profile id first, then by user_id for compatibility
+        const { data: byId } = await supabase
+          .from("profiles_public")
+          .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
+          .eq("id", id)
+          .maybeSingle();
+        
+        if (byId) {
+          data = byId;
+        } else {
+          // Matches page sends user_id as the param
+          const { data: byUserId } = await supabase
+            .from("profiles_public")
+            .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
+            .eq("user_id", id)
+            .maybeSingle();
+          data = byUserId;
+        }
       } else {
-        query = supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("user_id", session.user.id);
+        const { data: ownData, error } = await supabase
+          .from("profiles")
+          .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
+          .eq("user_id", session.user.id)
+          .maybeSingle();
+        if (error) throw error;
+        data = ownData;
       }
-
-      const { data, error } = await query.maybeSingle();
-
-      if (error) throw error;
       
       if (!data) {
         toast.error("Profile not found");
@@ -207,9 +229,15 @@ const UserProfile = () => {
               </div>
               
               <div className="flex-1">
-                <h1 className="font-heading text-3xl font-bold text-foreground">
-                  {profile.full_name}
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1 className="font-heading text-3xl font-bold text-foreground">
+                    {profile.full_name}
+                  </h1>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-body font-semibold">
+                    <CheckCircle size={12} />
+                    Verified
+                  </span>
+                </div>
                 {profile.age && (
                   <p className="text-lg text-muted-foreground font-body mt-1">
                     {profile.age} {t("profile.yearsOld")}
