@@ -633,7 +633,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         <Collapsible open={lookingForOpen} onOpenChange={setLookingForOpen}>
           <div className="border border-border rounded-lg overflow-hidden">
             <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h2 className="font-heading text-xl font-bold text-azul">What You're Looking For</h2>
+              <h2 className="font-heading text-xl font-bold text-azul">{t("edit.lookingFor")}</h2>
               <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", lookingForOpen && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
