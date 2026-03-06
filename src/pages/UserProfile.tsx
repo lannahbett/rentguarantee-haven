@@ -439,7 +439,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                   />
                 ) : (
                   <p className="text-lg font-semibold font-body text-foreground">
-                    {profile.budget ? `€${profile.budget}` : t("profile.notSpecified")}
+                    {profile.budget !== null ? `€${profile.budget}` : (profile.show_budget === false ? "🔒 Private" : t("profile.notSpecified"))}
                   </p>
                 )}
               </div>
