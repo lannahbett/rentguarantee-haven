@@ -74,6 +74,13 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
   const [agePreferenceMax, setAgePreferenceMax] = useState(60);
   const [genderPreference, setGenderPreference] = useState("any");
 
+  // Privacy toggles
+  const [showBudget, setShowBudget] = useState(true);
+  const [showLocation, setShowLocation] = useState(true);
+  const [showPhotos, setShowPhotos] = useState(true);
+  const [showHabits, setShowHabits] = useState(true);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+
   // Load existing profile data
   useEffect(() => {
     loadProfile();
