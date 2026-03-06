@@ -40,6 +40,7 @@ interface EditProfileProps {
 
 const EditProfile = ({ embedded = false }: EditProfileProps) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
