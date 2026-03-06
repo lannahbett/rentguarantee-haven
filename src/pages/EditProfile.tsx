@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import RoompeerNavbar from "@/components/roompeer/RoompeerNavbar";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { cn } from "@/lib/utils";
 import { 
   Users, 
@@ -39,6 +40,7 @@ interface EditProfileProps {
 
 const EditProfile = ({ embedded = false }: EditProfileProps) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -96,7 +98,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
     try {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
+        .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, show_budget, show_location, show_photos, show_habits, created_at, updated_at")
         .eq("user_id", session.user.id)
         .maybeSingle();
 
@@ -133,11 +135,11 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         setGuestPolicy(data.guest_preferences || "");
         setInterests(data.hobbies || []);
         setIdealFlatmate(data.ideal_flatmate || "");
-        // Privacy toggles - use nullish coalescing since columns may not be in select yet
-        setShowBudget((data as any).show_budget ?? true);
-        setShowLocation((data as any).show_location ?? true);
-        setShowPhotos((data as any).show_photos ?? true);
-        setShowHabits((data as any).show_habits ?? true);
+        // Privacy toggles
+        setShowBudget(data.show_budget ?? true);
+        setShowLocation(data.show_location ?? true);
+        setShowPhotos(data.show_photos ?? true);
+        setShowHabits(data.show_habits ?? true);
       }
     } catch (error: any) {
       toast.error("Failed to load profile");
@@ -291,10 +293,8 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
               </button>
             </div>
             <div>
-              <h2 className="font-heading text-xl font-bold text-[#232323]">Profile Picture</h2>
-              <p className="text-muted-foreground font-body text-sm">
-                Add a photo to help others recognize you
-              </p>
+              <h2 className="font-heading text-xl font-bold text-[#232323]">{t("edit.profilePicture")}</h2>
+              <p className="text-muted-foreground font-body text-sm">{t("edit.photoDesc")}</p>
               <Button
                 variant="outline"
                 size="sm"
@@ -311,7 +311,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         <Collapsible open={basicOpen} onOpenChange={setBasicOpen}>
           <div className="border border-border rounded-lg overflow-hidden">
             <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h2 className="font-heading text-xl font-bold text-azul">Basic Information</h2>
+              <h2 className="font-heading text-xl font-bold text-azul">{t("edit.basicInfo")}</h2>
               <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", basicOpen && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -379,7 +379,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         <Collapsible open={livingOpen} onOpenChange={setLivingOpen}>
           <div className="border border-border rounded-lg overflow-hidden">
             <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h2 className="font-heading text-xl font-bold text-azul">Living Preferences</h2>
+              <h2 className="font-heading text-xl font-bold text-azul">{t("edit.livingPrefs")}</h2>
               <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", livingOpen && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -463,7 +463,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         <Collapsible open={lifestyleOpen} onOpenChange={setLifestyleOpen}>
           <div className="border border-border rounded-lg overflow-hidden">
             <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h2 className="font-heading text-xl font-bold text-azul">Lifestyle</h2>
+              <h2 className="font-heading text-xl font-bold text-azul">{t("edit.lifestyle")}</h2>
               <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", lifestyleOpen && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -633,7 +633,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         <Collapsible open={lookingForOpen} onOpenChange={setLookingForOpen}>
           <div className="border border-border rounded-lg overflow-hidden">
             <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h2 className="font-heading text-xl font-bold text-azul">What You're Looking For</h2>
+              <h2 className="font-heading text-xl font-bold text-azul">{t("edit.lookingFor")}</h2>
               <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", lookingForOpen && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -690,7 +690,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         <Collapsible open={privacyOpen} onOpenChange={setPrivacyOpen}>
           <div className="border border-border rounded-lg overflow-hidden">
             <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h2 className="font-heading text-xl font-bold text-azul">Privacy Settings</h2>
+              <h2 className="font-heading text-xl font-bold text-azul">{t("edit.privacy")}</h2>
               <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", privacyOpen && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
@@ -801,10 +801,8 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
                 </button>
               </div>
               <div>
-                <h2 className="font-heading text-xl font-bold text-[#232323]">Profile Picture</h2>
-                <p className="text-muted-foreground font-body text-sm">
-                  Add a photo to help others recognize you
-                </p>
+                <h2 className="font-heading text-xl font-bold text-[#232323]">{t("edit.profilePicture")}</h2>
+                <p className="text-muted-foreground font-body text-sm">{t("edit.photoDesc")}</p>
                 <Button
                   variant="outline"
                   size="sm"
@@ -821,7 +819,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
           <Collapsible open={basicOpen} onOpenChange={setBasicOpen} className="mb-4">
             <div className="bg-card border border-border rounded-lg overflow-hidden">
               <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <h2 className="font-heading text-xl font-bold text-azul">Basic Information</h2>
+                <h2 className="font-heading text-xl font-bold text-azul">{t("edit.basicInfo")}</h2>
                 <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", basicOpen && "rotate-180")} />
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -893,7 +891,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
           <Collapsible open={livingOpen} onOpenChange={setLivingOpen} className="mb-4">
             <div className="bg-card border border-border rounded-lg overflow-hidden">
               <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <h2 className="font-heading text-xl font-bold text-azul">Living Preferences</h2>
+                <h2 className="font-heading text-xl font-bold text-azul">{t("edit.livingPrefs")}</h2>
                 <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", livingOpen && "rotate-180")} />
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -977,7 +975,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
           <Collapsible open={lifestyleOpen} onOpenChange={setLifestyleOpen} className="mb-4">
             <div className="bg-card border border-border rounded-lg overflow-hidden">
               <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <h2 className="font-heading text-xl font-bold text-azul">Lifestyle</h2>
+                <h2 className="font-heading text-xl font-bold text-azul">{t("edit.lifestyle")}</h2>
                 <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", lifestyleOpen && "rotate-180")} />
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -1147,7 +1145,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
           <Collapsible open={lookingForOpen} onOpenChange={setLookingForOpen} className="mb-4">
             <div className="bg-card border border-border rounded-lg overflow-hidden">
               <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <h2 className="font-heading text-xl font-bold text-azul">What You're Looking For</h2>
+                <h2 className="font-heading text-xl font-bold text-azul">{t("edit.lookingFor")}</h2>
                 <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", lookingForOpen && "rotate-180")} />
               </CollapsibleTrigger>
               <CollapsibleContent>
@@ -1208,7 +1206,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
           <Collapsible open={privacyOpen} onOpenChange={setPrivacyOpen} className="mb-4">
             <div className="bg-card border border-border rounded-lg overflow-hidden">
               <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-                <h2 className="font-heading text-xl font-bold text-azul">Privacy Settings</h2>
+                <h2 className="font-heading text-xl font-bold text-azul">{t("edit.privacy")}</h2>
                 <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", privacyOpen && "rotate-180")} />
               </CollapsibleTrigger>
               <CollapsibleContent>

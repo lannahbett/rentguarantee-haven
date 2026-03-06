@@ -93,7 +93,7 @@ const UserProfile = () => {
         // Try by profile id first, then by user_id for compatibility
         const { data: byId } = await supabase
           .from("profiles_public")
-          .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
+          .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, show_budget, show_location, show_photos, show_habits, created_at, updated_at")
           .eq("id", id)
           .maybeSingle();
         
@@ -103,15 +103,15 @@ const UserProfile = () => {
           // Matches page sends user_id as the param
           const { data: byUserId } = await supabase
             .from("profiles_public")
-            .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
-            .eq("user_id", id)
+          .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, show_budget, show_location, show_photos, show_habits, created_at, updated_at")
+          .eq("user_id", id)
             .maybeSingle();
           data = byUserId;
         }
       } else {
         const { data: ownData, error } = await supabase
           .from("profiles")
-          .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
+          .select("id, user_id, full_name, email, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, show_budget, show_location, show_photos, show_habits, created_at, updated_at")
           .eq("user_id", session.user.id)
           .maybeSingle();
         if (error) throw error;
