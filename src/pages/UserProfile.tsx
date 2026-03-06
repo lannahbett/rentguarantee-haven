@@ -103,8 +103,8 @@ const UserProfile = () => {
           // Matches page sends user_id as the param
           const { data: byUserId } = await supabase
             .from("profiles_public")
-            .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at")
-            .eq("user_id", id)
+          .select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, show_budget, show_location, show_photos, show_habits, created_at, updated_at")
+          .eq("user_id", id)
             .maybeSingle();
           data = byUserId;
         }
