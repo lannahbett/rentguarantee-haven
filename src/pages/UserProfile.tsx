@@ -47,6 +47,10 @@ interface Profile {
   cleanliness_level: string | null;
   guest_preferences: string | null;
   ideal_flatmate: string | null;
+  show_budget?: boolean;
+  show_location?: boolean;
+  show_photos?: boolean;
+  show_habits?: boolean;
 }
 
 const UserProfile = () => {
