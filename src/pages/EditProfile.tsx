@@ -133,6 +133,11 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         setGuestPolicy(data.guest_preferences || "");
         setInterests(data.hobbies || []);
         setIdealFlatmate(data.ideal_flatmate || "");
+        // Privacy toggles - use nullish coalescing since columns may not be in select yet
+        setShowBudget((data as any).show_budget ?? true);
+        setShowLocation((data as any).show_location ?? true);
+        setShowPhotos((data as any).show_photos ?? true);
+        setShowHabits((data as any).show_habits ?? true);
       }
     } catch (error: any) {
       toast.error("Failed to load profile");
