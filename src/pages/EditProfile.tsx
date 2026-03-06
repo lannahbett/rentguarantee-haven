@@ -801,10 +801,8 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
                 </button>
               </div>
               <div>
-                <h2 className="font-heading text-xl font-bold text-[#232323]">Profile Picture</h2>
-                <p className="text-muted-foreground font-body text-sm">
-                  Add a photo to help others recognize you
-                </p>
+                <h2 className="font-heading text-xl font-bold text-[#232323]">{t("edit.profilePicture")}</h2>
+                <p className="text-muted-foreground font-body text-sm">{t("edit.photoDesc")}</p>
                 <Button
                   variant="outline"
                   size="sm"
