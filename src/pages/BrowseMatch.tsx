@@ -5,11 +5,12 @@ import RoompeerNavbar from "@/components/roompeer/RoompeerNavbar";
 import FeedbackWidget from "@/components/roompeer/FeedbackWidget";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Heart, X, MapPin, User, Sparkles, MessageCircle, Settings } from "lucide-react";
+import { Heart, X, MapPin, User, Sparkles, MessageCircle, Settings, Navigation } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { cn } from "@/lib/utils";
 
-interface Profile {
+interface PublicProfile {
   id: string;
   user_id: string;
   full_name: string;
@@ -19,44 +20,59 @@ interface Profile {
   hobbies: string[] | null;
   budget: number | null;
   desired_location: string | null;
-  smoker: boolean;
+  smoker: boolean | null;
   cleanliness_level: string | null;
-  early_riser: boolean;
-  night_owl: boolean;
-  has_pets: boolean;
+  early_riser: boolean | null;
+  night_owl: boolean | null;
+  has_pets: boolean | null;
   accommodation_type: string | null;
   guest_preferences: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  show_budget: boolean | null;
+  show_location: boolean | null;
+  show_photos: boolean | null;
+  show_habits: boolean | null;
 }
 
-interface ScoredProfile extends Profile {
+interface ScoredProfile extends PublicProfile {
   compatibilityScore: number;
+  distanceKm: number | null;
 }
+
+// Haversine distance in km
+const haversineKm = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
 
 // Compatibility scoring algorithm
 const calculateCompatibility = (
-  userProfile: Profile | null,
-  candidate: Profile,
+  userProfile: PublicProfile | null,
+  candidate: PublicProfile,
   discoverySettings: any | null
 ): number => {
-  if (!userProfile) return 50; // Default score if no user profile
+  if (!userProfile) return 50;
 
   let score = 0;
   let factors = 0;
 
-  // Location match (high weight)
+  // Location match
   if (userProfile.desired_location && candidate.desired_location) {
     factors += 3;
-    if (userProfile.desired_location.toLowerCase() === candidate.desired_location.toLowerCase()) {
-      score += 3;
-    } else if (
+    if (userProfile.desired_location.toLowerCase() === candidate.desired_location.toLowerCase()) score += 3;
+    else if (
       userProfile.desired_location.toLowerCase().includes(candidate.desired_location.toLowerCase()) ||
       candidate.desired_location.toLowerCase().includes(userProfile.desired_location.toLowerCase())
-    ) {
-      score += 2;
-    }
+    ) score += 2;
   }
 
-  // Budget compatibility (high weight)
+  // Budget compatibility
   if (userProfile.budget && candidate.budget) {
     factors += 3;
     const diff = Math.abs(userProfile.budget - candidate.budget);
@@ -67,29 +83,30 @@ const calculateCompatibility = (
     else if (ratio < 0.5) score += 1;
   }
 
-  // Smoking compatibility
-  if (userProfile.smoker !== undefined && candidate.smoker !== undefined) {
+  // Smoking
+  if (userProfile.smoker != null && candidate.smoker != null) {
     factors += 2;
     if (userProfile.smoker === candidate.smoker) score += 2;
   }
 
-  // Sleep schedule compatibility
-  factors += 2;
-  if (userProfile.early_riser === candidate.early_riser && userProfile.night_owl === candidate.night_owl) {
-    score += 2;
-  } else if (userProfile.early_riser === candidate.early_riser || userProfile.night_owl === candidate.night_owl) {
-    score += 1;
+  // Sleep schedule
+  if (userProfile.early_riser != null && candidate.early_riser != null) {
+    factors += 2;
+    if (userProfile.early_riser === candidate.early_riser && userProfile.night_owl === candidate.night_owl) score += 2;
+    else if (userProfile.early_riser === candidate.early_riser || userProfile.night_owl === candidate.night_owl) score += 1;
   }
 
-  // Cleanliness level
+  // Cleanliness
   if (userProfile.cleanliness_level && candidate.cleanliness_level) {
     factors += 2;
     if (userProfile.cleanliness_level === candidate.cleanliness_level) score += 2;
   }
 
-  // Pets compatibility
-  factors += 1;
-  if (userProfile.has_pets === candidate.has_pets) score += 1;
+  // Pets
+  if (userProfile.has_pets != null && candidate.has_pets != null) {
+    factors += 1;
+    if (userProfile.has_pets === candidate.has_pets) score += 1;
+  }
 
   // Accommodation type
   if (userProfile.accommodation_type && candidate.accommodation_type) {
@@ -111,7 +128,7 @@ const calculateCompatibility = (
     if (userProfile.guest_preferences === candidate.guest_preferences) score += 1;
   }
 
-  // Apply discovery settings filters
+  // Hard filters from discovery settings
   if (discoverySettings) {
     if (discoverySettings.smoking_preference === "non-smoker" && candidate.smoker) return 0;
     if (discoverySettings.smoking_preference === "smoker" && !candidate.smoker) return 0;
@@ -123,6 +140,8 @@ const calculateCompatibility = (
   return factors > 0 ? Math.round((score / factors) * 100) : 50;
 };
 
+const FIELDS = "id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, latitude, longitude, show_budget, show_location, show_photos, show_habits, created_at, updated_at";
+
 const BrowseMatch = () => {
   const [profiles, setProfiles] = useState<ScoredProfile[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -133,55 +152,71 @@ const BrowseMatch = () => {
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
+  const [startX, setStartX] = useState(0);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
   const navigate = useNavigate();
   const { t } = useLanguage();
 
   useEffect(() => {
+    // Request GPS
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          // Save to profile
+          saveUserLocation(pos.coords.latitude, pos.coords.longitude);
+        },
+        () => { /* GPS denied, proceed without */ }
+      );
+    }
     checkAuthAndFetch();
   }, []);
 
+  const saveUserLocation = async (lat: number, lng: number) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    await supabase.from("profiles").update({ latitude: lat, longitude: lng } as any).eq("user_id", session.user.id);
+  };
+
   const checkAuthAndFetch = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
+    if (!session) { navigate("/auth"); return; }
     setCurrentUserId(session.user.id);
     fetchProfiles(session.user.id);
   };
 
   const fetchProfiles = async (userId: string) => {
     try {
-      // Fetch in parallel: liked profiles, user profile, discovery settings, all candidates
       const [likesRes, userProfileRes, settingsRes, candidatesRes] = await Promise.all([
         supabase.from("likes").select("liked_id").eq("liker_id", userId),
-        supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("user_id", userId).maybeSingle(),
+        supabase.from("profiles").select("*").eq("user_id", userId).maybeSingle(),
         supabase.from("discovery_settings").select("*").eq("user_id", userId).maybeSingle(),
-        supabase.from("profiles").select("id, user_id, full_name, age, bio, occupation, hobbies, budget, desired_location, move_in_date, accommodation_type, early_riser, night_owl, smoker, cleanliness_level, guest_preferences, ideal_flatmate, profile_completed, has_pets, wants_pets, created_at, updated_at").eq("profile_completed", true).neq("user_id", userId),
+        supabase.from("profiles_public").select(FIELDS).eq("profile_completed", true).neq("user_id", userId),
       ]);
 
       const likedIds = likesRes.data?.map(l => l.liked_id) || [];
-      const userProfile = userProfileRes.data;
+      const userProfile = userProfileRes.data as any;
       const discoverySettings = settingsRes.data;
+      const maxDist = discoverySettings?.max_distance || 25;
 
       if (candidatesRes.error) throw candidatesRes.error;
 
-      // Filter out already liked, score, and sort by compatibility
       const scored = (candidatesRes.data || [])
-        .filter(p => !likedIds.includes(p.user_id))
-        .map(p => ({
-          ...p,
-          smoker: p.smoker ?? false,
-          early_riser: p.early_riser ?? false,
-          night_owl: p.night_owl ?? false,
-          has_pets: p.has_pets ?? false,
-          compatibilityScore: calculateCompatibility(
-            userProfile ? { ...userProfile, smoker: userProfile.smoker ?? false, early_riser: userProfile.early_riser ?? false, night_owl: userProfile.night_owl ?? false, has_pets: userProfile.has_pets ?? false } : null,
-            { ...p, smoker: p.smoker ?? false, early_riser: p.early_riser ?? false, night_owl: p.night_owl ?? false, has_pets: p.has_pets ?? false },
-            discoverySettings
-          ),
-        }))
-        .filter(p => p.compatibilityScore > 0) // Filter out incompatible based on hard filters
+        .filter((p: any) => !likedIds.includes(p.user_id))
+        .map((p: any) => {
+          let distanceKm: number | null = null;
+          if (userProfile?.latitude && userProfile?.longitude && p.latitude && p.longitude) {
+            distanceKm = haversineKm(userProfile.latitude, userProfile.longitude, p.latitude, p.longitude);
+          }
+          return {
+            ...p,
+            compatibilityScore: calculateCompatibility(userProfile, p, discoverySettings),
+            distanceKm,
+          } as ScoredProfile;
+        })
+        .filter(p => p.compatibilityScore > 0)
+        // Filter by distance if both have GPS
+        .filter(p => p.distanceKm === null || p.distanceKm <= maxDist)
         .sort((a, b) => b.compatibilityScore - a.compatibilityScore);
 
       setProfiles(scored);
@@ -194,33 +229,22 @@ const BrowseMatch = () => {
 
   const handleLike = async () => {
     if (!currentUserId || currentIndex >= profiles.length) return;
-    
     const likedProfile = profiles[currentIndex];
     setSwipeDirection('right');
-    
-    try {
-      const { error } = await supabase
-        .from("likes")
-        .insert({ liker_id: currentUserId, liked_id: likedProfile.user_id });
 
+    try {
+      const { error } = await supabase.from("likes").insert({ liker_id: currentUserId, liked_id: likedProfile.user_id });
       if (error) throw error;
 
-      // Check if it's a match (the trigger creates it automatically)
       const { data: match } = await supabase
         .from("matches")
         .select("*")
         .or(`and(user1_id.eq.${currentUserId},user2_id.eq.${likedProfile.user_id}),and(user1_id.eq.${likedProfile.user_id},user2_id.eq.${currentUserId})`)
         .maybeSingle();
 
-      if (match) {
-        setMatchedProfile(likedProfile);
-        setShowMatch(true);
-      }
+      if (match) { setMatchedProfile(likedProfile); setShowMatch(true); }
 
-      setTimeout(() => {
-        setSwipeDirection(null);
-        setCurrentIndex(prev => prev + 1);
-      }, 300);
+      setTimeout(() => { setSwipeDirection(null); setCurrentIndex(prev => prev + 1); }, 300);
     } catch (error: any) {
       toast.error("Failed to like profile");
       setSwipeDirection(null);
@@ -230,19 +254,20 @@ const BrowseMatch = () => {
   const handlePass = () => {
     if (currentIndex >= profiles.length) return;
     setSwipeDirection('left');
-    setTimeout(() => {
-      setSwipeDirection(null);
-      setCurrentIndex(prev => prev + 1);
-    }, 300);
+    setTimeout(() => { setSwipeDirection(null); setCurrentIndex(prev => prev + 1); }, 300);
   };
 
-  const handleDragStart = () => setIsDragging(true);
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    setIsDragging(true);
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    setStartX(clientX);
+  };
 
   const handleDragMove = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging) return;
     const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    setDragOffset(clientX - window.innerWidth / 2);
-  }, [isDragging]);
+    setDragOffset(clientX - startX);
+  }, [isDragging, startX]);
 
   const handleDragEnd = () => {
     if (!isDragging) return;
@@ -256,32 +281,35 @@ const BrowseMatch = () => {
 
   const getTags = (profile: ScoredProfile) => {
     const tags: string[] = [];
-    if (!profile.smoker) tags.push("Non-Smoker");
-    if (profile.early_riser) tags.push("Early Riser");
-    if (profile.night_owl) tags.push("Night Owl");
+    if (profile.show_budget !== false && profile.budget) tags.push(`${profile.budget}k HUF`);
+    if (profile.show_location !== false && profile.desired_location) tags.push(profile.desired_location);
+    if (profile.show_habits !== false) {
+      if (profile.smoker === false) tags.push("Non-Smoker");
+      if (profile.early_riser) tags.push("Early Riser");
+      if (profile.night_owl) tags.push("Night Owl");
+      if (profile.has_pets) tags.push("Pets OK");
+    }
     if (profile.occupation) tags.push(profile.occupation);
-    if (profile.has_pets) tags.push("Pet Lover");
-    if (profile.budget) tags.push(`£${profile.budget}/mo`);
-    return tags.slice(0, 5);
+    return tags.slice(0, 6);
   };
 
   const getCardStyle = () => {
-    if (swipeDirection === 'left') return { transform: 'translateX(-150%) rotate(-30deg)', opacity: 0 };
-    if (swipeDirection === 'right') return { transform: 'translateX(150%) rotate(30deg)', opacity: 0 };
-    if (isDragging) return { transform: `translateX(${dragOffset}px) rotate(${dragOffset * 0.05}deg)` };
-    return {};
+    if (swipeDirection === 'left') return { transform: 'translateX(-150%) rotate(-30deg)', opacity: 0, transition: 'all 0.3s ease-out' };
+    if (swipeDirection === 'right') return { transform: 'translateX(150%) rotate(30deg)', opacity: 0, transition: 'all 0.3s ease-out' };
+    if (isDragging) return { transform: `translateX(${dragOffset}px) rotate(${dragOffset * 0.04}deg)`, transition: 'none' };
+    return { transition: 'all 0.3s ease-out' };
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 75) return "text-green-600 bg-green-100";
-    if (score >= 50) return "text-yellow-600 bg-yellow-100";
-    return "text-orange-600 bg-orange-100";
+    if (score >= 75) return "text-green-700 bg-green-100 border-green-200";
+    if (score >= 50) return "text-yellow-700 bg-yellow-100 border-yellow-200";
+    return "text-orange-700 bg-orange-100 border-orange-200";
   };
 
   return (
     <div className="min-h-screen bg-background">
       <RoompeerNavbar />
-      
+
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="flex items-center justify-between mb-6">
           <h1 className="font-heading text-2xl md:text-3xl font-bold text-foreground">
@@ -308,8 +336,9 @@ const BrowseMatch = () => {
             </div>
           ) : (
             <>
+              {/* Tinder-style card */}
               <div
-                className="relative w-full max-w-sm cursor-grab active:cursor-grabbing"
+                className="relative w-full max-w-sm cursor-grab active:cursor-grabbing select-none"
                 onMouseDown={handleDragStart}
                 onMouseMove={handleDragMove}
                 onMouseUp={handleDragEnd}
@@ -318,60 +347,97 @@ const BrowseMatch = () => {
                 onTouchMove={handleDragMove}
                 onTouchEnd={handleDragEnd}
               >
-                <div className="bg-card border border-border rounded-2xl shadow-lg overflow-hidden transition-all duration-300 select-none" style={getCardStyle()}>
-                  <div className="bg-gradient-to-br from-primary to-secondary h-64 flex items-center justify-center relative">
-                    <User size={80} className="text-primary-foreground/80" />
-                    {/* Compatibility score badge */}
-                    <div className={`absolute top-4 right-4 px-3 py-1.5 rounded-full font-body font-bold text-sm ${getScoreColor(currentProfile.compatibilityScore)}`}>
+                <div
+                  className="bg-card border border-border rounded-3xl shadow-xl overflow-hidden"
+                  style={getCardStyle()}
+                >
+                  {/* Photo area */}
+                  <div className="bg-gradient-to-br from-primary/80 to-secondary/80 h-72 flex items-center justify-center relative">
+                    <User size={96} className="text-primary-foreground/60" />
+
+                    {/* Score badge */}
+                    <div className={cn("absolute top-4 right-4 px-3 py-1.5 rounded-full font-body font-bold text-sm border", getScoreColor(currentProfile.compatibilityScore))}>
                       {currentProfile.compatibilityScore}% match
+                    </div>
+
+                    {/* Distance badge */}
+                    {currentProfile.distanceKm !== null && (
+                      <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-card/90 text-foreground font-body text-xs font-medium flex items-center gap-1 border border-border">
+                        <Navigation size={12} />
+                        {currentProfile.distanceKm < 1 ? "<1 km" : `${Math.round(currentProfile.distanceKm)} km`}
+                      </div>
+                    )}
+
+                    {/* Swipe indicators */}
+                    {isDragging && dragOffset > 50 && (
+                      <div className="absolute top-16 left-4 bg-green-500 text-white px-5 py-2 rounded-xl font-heading font-bold text-xl rotate-[-15deg] shadow-lg">LIKE</div>
+                    )}
+                    {isDragging && dragOffset < -50 && (
+                      <div className="absolute top-16 right-4 bg-destructive text-white px-5 py-2 rounded-xl font-heading font-bold text-xl rotate-[15deg] shadow-lg">PASS</div>
+                    )}
+
+                    {/* Bottom gradient overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-card to-transparent" />
+
+                    {/* Name overlay at bottom of image */}
+                    <div className="absolute bottom-4 left-6 right-6">
+                      <div className="flex items-baseline gap-2">
+                        <h2 className="font-heading text-2xl font-bold text-foreground">{currentProfile.full_name}</h2>
+                        {currentProfile.age && (
+                          <span className="text-xl text-muted-foreground font-body">{currentProfile.age}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="p-6">
-                    <div className="flex items-baseline gap-2 mb-2">
-                      <h2 className="font-heading text-2xl font-bold text-foreground">{currentProfile.full_name}</h2>
-                      {currentProfile.age && (
-                        <span className="text-xl text-muted-foreground font-body">{currentProfile.age}</span>
-                      )}
-                    </div>
-
+                  {/* Card body */}
+                  <div className="p-6 space-y-4">
                     {currentProfile.bio && (
-                      <p className="text-foreground font-body text-sm mb-4 line-clamp-3">{currentProfile.bio}</p>
+                      <p className="text-foreground font-body text-sm line-clamp-2">{currentProfile.bio}</p>
                     )}
 
-                    {currentProfile.desired_location && (
-                      <div className="flex items-center gap-2 text-muted-foreground mb-4">
-                        <MapPin size={16} className="text-primary" />
+                    {currentProfile.show_location !== false && currentProfile.desired_location && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <MapPin size={16} className="text-primary shrink-0" />
                         <span className="font-body text-sm">{currentProfile.desired_location}</span>
                       </div>
                     )}
 
+                    {/* Tags */}
                     <div className="flex flex-wrap gap-2">
                       {getTags(currentProfile).map((tag, index) => (
-                        <span key={index} className="px-3 py-1 bg-secondary/10 text-primary rounded-full text-xs font-body font-medium">
+                        <span key={index} className="px-3 py-1 bg-secondary/10 text-primary rounded-full text-xs font-body font-medium border border-primary/10">
                           {tag}
                         </span>
                       ))}
                     </div>
                   </div>
-
-                  {isDragging && dragOffset > 50 && (
-                    <div className="absolute top-4 left-4 bg-green-500 text-white px-4 py-2 rounded-lg font-body font-bold rotate-[-20deg]">LIKE</div>
-                  )}
-                  {isDragging && dragOffset < -50 && (
-                    <div className="absolute top-4 right-4 bg-muted-foreground text-white px-4 py-2 rounded-lg font-body font-bold rotate-[20deg]">PASS</div>
-                  )}
                 </div>
               </div>
 
-              <div className="flex items-center gap-8 mt-8">
-                <Button onClick={handlePass} variant="outline" size="lg" className="w-16 h-16 rounded-full border-2 border-muted-foreground hover:bg-muted-foreground hover:text-white transition-colors">
+              {/* Action buttons */}
+              <div className="flex items-center gap-6 mt-8">
+                <Button
+                  onClick={handlePass}
+                  variant="outline"
+                  size="lg"
+                  className="w-16 h-16 rounded-full border-2 border-destructive/50 hover:bg-destructive hover:text-white transition-all shadow-md"
+                >
                   <X size={28} />
                 </Button>
-                <Button onClick={() => navigate(`/profile/${currentProfile.id}`)} variant="outline" size="lg" className="w-12 h-12 rounded-full border-2 border-secondary hover:bg-secondary hover:text-white transition-colors">
+                <Button
+                  onClick={() => navigate(`/profile/${currentProfile.id}`)}
+                  variant="outline"
+                  size="lg"
+                  className="w-12 h-12 rounded-full border-2 border-secondary hover:bg-secondary hover:text-white transition-all"
+                >
                   <User size={20} />
                 </Button>
-                <Button onClick={handleLike} size="lg" className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Button
+                  onClick={handleLike}
+                  size="lg"
+                  className="w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md transition-all"
+                >
                   <Heart size={28} />
                 </Button>
               </div>
@@ -382,6 +448,7 @@ const BrowseMatch = () => {
         </div>
       </div>
 
+      {/* Match dialog */}
       <Dialog open={showMatch} onOpenChange={setShowMatch}>
         <DialogContent className="sm:max-w-md text-center">
           <DialogHeader>
