@@ -185,6 +185,10 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
           hobbies: interests,
           ideal_flatmate: idealFlatmate,
           profile_completed: true,
+          show_budget: showBudget,
+          show_location: showLocation,
+          show_photos: showPhotos,
+          show_habits: showHabits,
         })
         .eq("user_id", user.id);
 
