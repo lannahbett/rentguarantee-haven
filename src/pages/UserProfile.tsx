@@ -460,7 +460,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                   />
                 ) : (
                   <p className="text-lg font-semibold font-body text-foreground">
-                    {profile.desired_location || t("profile.notSpecified")}
+                    {profile.desired_location || (profile.show_location === false ? "🔒 Private" : t("profile.notSpecified"))}
                   </p>
                 )}
               </div>
