@@ -379,7 +379,7 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         <Collapsible open={livingOpen} onOpenChange={setLivingOpen}>
           <div className="border border-border rounded-lg overflow-hidden">
             <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
-              <h2 className="font-heading text-xl font-bold text-azul">Living Preferences</h2>
+              <h2 className="font-heading text-xl font-bold text-azul">{t("edit.livingPrefs")}</h2>
               <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", livingOpen && "rotate-180")} />
             </CollapsibleTrigger>
             <CollapsibleContent>
