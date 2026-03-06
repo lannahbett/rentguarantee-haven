@@ -47,6 +47,10 @@ interface Profile {
   cleanliness_level: string | null;
   guest_preferences: string | null;
   ideal_flatmate: string | null;
+  show_budget?: boolean;
+  show_location?: boolean;
+  show_photos?: boolean;
+  show_habits?: boolean;
 }
 
 const UserProfile = () => {
@@ -435,7 +439,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                   />
                 ) : (
                   <p className="text-lg font-semibold font-body text-foreground">
-                    {profile.budget ? `€${profile.budget}` : t("profile.notSpecified")}
+                    {profile.budget !== null ? `€${profile.budget}` : (profile.show_budget === false ? "🔒 Private" : t("profile.notSpecified"))}
                   </p>
                 )}
               </div>
@@ -456,7 +460,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
                   />
                 ) : (
                   <p className="text-lg font-semibold font-body text-foreground">
-                    {profile.desired_location || t("profile.notSpecified")}
+                    {profile.desired_location || (profile.show_location === false ? "🔒 Private" : t("profile.notSpecified"))}
                   </p>
                 )}
               </div>

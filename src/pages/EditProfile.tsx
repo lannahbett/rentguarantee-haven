@@ -74,6 +74,13 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
   const [agePreferenceMax, setAgePreferenceMax] = useState(60);
   const [genderPreference, setGenderPreference] = useState("any");
 
+  // Privacy toggles
+  const [showBudget, setShowBudget] = useState(true);
+  const [showLocation, setShowLocation] = useState(true);
+  const [showPhotos, setShowPhotos] = useState(true);
+  const [showHabits, setShowHabits] = useState(true);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+
   // Load existing profile data
   useEffect(() => {
     loadProfile();
@@ -126,6 +133,11 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
         setGuestPolicy(data.guest_preferences || "");
         setInterests(data.hobbies || []);
         setIdealFlatmate(data.ideal_flatmate || "");
+        // Privacy toggles - use nullish coalescing since columns may not be in select yet
+        setShowBudget((data as any).show_budget ?? true);
+        setShowLocation((data as any).show_location ?? true);
+        setShowPhotos((data as any).show_photos ?? true);
+        setShowHabits((data as any).show_habits ?? true);
       }
     } catch (error: any) {
       toast.error("Failed to load profile");
@@ -173,6 +185,10 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
           hobbies: interests,
           ideal_flatmate: idealFlatmate,
           profile_completed: true,
+          show_budget: showBudget,
+          show_location: showLocation,
+          show_photos: showPhotos,
+          show_habits: showHabits,
         })
         .eq("user_id", user.id);
 
@@ -669,6 +685,47 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
             </CollapsibleContent>
           </div>
         </Collapsible>
+
+        {/* Section 5: Privacy Settings */}
+        <Collapsible open={privacyOpen} onOpenChange={setPrivacyOpen}>
+          <div className="border border-border rounded-lg overflow-hidden">
+            <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <h2 className="font-heading text-xl font-bold text-azul">Privacy Settings</h2>
+              <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", privacyOpen && "rotate-180")} />
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="px-6 pb-6 space-y-4">
+                <p className="text-sm text-muted-foreground font-body">Control what other users can see on your profile. Hidden fields show as "Private".</p>
+                {[
+                  { label: "Show Budget", desc: "Let others see your monthly budget", value: showBudget, set: setShowBudget },
+                  { label: "Show Location", desc: "Let others see your desired location", value: showLocation, set: setShowLocation },
+                  { label: "Show Photos", desc: "Let others see your profile photos", value: showPhotos, set: setShowPhotos },
+                  { label: "Show Habits", desc: "Let others see lifestyle details (sleep, smoking, pets, cleanliness)", value: showHabits, set: setShowHabits },
+                ].map(({ label, desc, value, set }) => (
+                  <div key={label} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                    <div>
+                      <p className="font-body font-medium text-foreground">{label}</p>
+                      <p className="text-xs text-muted-foreground font-body">{desc}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => { set(!value); markChanged(); }}
+                      className={cn(
+                        "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors",
+                        value ? "bg-azul" : "bg-input"
+                      )}
+                    >
+                      <span className={cn(
+                        "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg transition-transform",
+                        value ? "translate-x-5" : "translate-x-0"
+                      )} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleContent>
+          </div>
+        </Collapsible>
       </div>
     );
   }
@@ -1142,6 +1199,47 @@ const EditProfile = ({ embedded = false }: EditProfileProps) => {
                       This is optional and helps filter your matches
                     </p>
                   </div>
+                </div>
+              </CollapsibleContent>
+            </div>
+          </Collapsible>
+
+          {/* Section 5: Privacy Settings */}
+          <Collapsible open={privacyOpen} onOpenChange={setPrivacyOpen} className="mb-4">
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
+                <h2 className="font-heading text-xl font-bold text-azul">Privacy Settings</h2>
+                <ChevronDown className={cn("h-5 w-5 text-muted-foreground transition-transform", privacyOpen && "rotate-180")} />
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                <div className="px-6 pb-6 space-y-4">
+                  <p className="text-sm text-muted-foreground font-body">Control what other users can see on your profile. Hidden fields show as "Private".</p>
+                  {[
+                    { label: "Show Budget", desc: "Let others see your monthly budget", value: showBudget, set: setShowBudget },
+                    { label: "Show Location", desc: "Let others see your desired location", value: showLocation, set: setShowLocation },
+                    { label: "Show Photos", desc: "Let others see your profile photos", value: showPhotos, set: setShowPhotos },
+                    { label: "Show Habits", desc: "Let others see lifestyle details (sleep, smoking, pets, cleanliness)", value: showHabits, set: setShowHabits },
+                  ].map(({ label, desc, value, set }) => (
+                    <div key={label} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                      <div>
+                        <p className="font-body font-medium text-foreground">{label}</p>
+                        <p className="text-xs text-muted-foreground font-body">{desc}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { set(!value); markChanged(); }}
+                        className={cn(
+                          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors",
+                          value ? "bg-azul" : "bg-input"
+                        )}
+                      >
+                        <span className={cn(
+                          "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg transition-transform",
+                          value ? "translate-x-5" : "translate-x-0"
+                        )} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </CollapsibleContent>
             </div>

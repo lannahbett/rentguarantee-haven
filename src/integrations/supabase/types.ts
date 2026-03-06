@@ -219,10 +219,16 @@ export type Database = {
           hobbies: string[] | null
           id: string
           ideal_flatmate: string | null
+          latitude: number | null
+          longitude: number | null
           move_in_date: string | null
           night_owl: boolean | null
           occupation: string | null
           profile_completed: boolean | null
+          show_budget: boolean
+          show_habits: boolean
+          show_location: boolean
+          show_photos: boolean
           smoker: boolean | null
           updated_at: string | null
           user_id: string
@@ -244,10 +250,16 @@ export type Database = {
           hobbies?: string[] | null
           id?: string
           ideal_flatmate?: string | null
+          latitude?: number | null
+          longitude?: number | null
           move_in_date?: string | null
           night_owl?: boolean | null
           occupation?: string | null
           profile_completed?: boolean | null
+          show_budget?: boolean
+          show_habits?: boolean
+          show_location?: boolean
+          show_photos?: boolean
           smoker?: boolean | null
           updated_at?: string | null
           user_id: string
@@ -269,10 +281,16 @@ export type Database = {
           hobbies?: string[] | null
           id?: string
           ideal_flatmate?: string | null
+          latitude?: number | null
+          longitude?: number | null
           move_in_date?: string | null
           night_owl?: boolean | null
           occupation?: string | null
           profile_completed?: boolean | null
+          show_budget?: boolean
+          show_habits?: boolean
+          show_location?: boolean
+          show_photos?: boolean
           smoker?: boolean | null
           updated_at?: string | null
           user_id?: string
@@ -319,10 +337,16 @@ export type Database = {
           hobbies: string[] | null
           id: string | null
           ideal_flatmate: string | null
+          latitude: number | null
+          longitude: number | null
           move_in_date: string | null
           night_owl: boolean | null
           occupation: string | null
           profile_completed: boolean | null
+          show_budget: boolean | null
+          show_habits: boolean | null
+          show_location: boolean | null
+          show_photos: boolean | null
           smoker: boolean | null
           updated_at: string | null
           user_id: string | null
@@ -332,22 +356,28 @@ export type Database = {
           accommodation_type?: string | null
           age?: number | null
           bio?: string | null
-          budget?: number | null
-          cleanliness_level?: string | null
+          budget?: never
+          cleanliness_level?: never
           created_at?: string | null
-          desired_location?: string | null
-          early_riser?: boolean | null
+          desired_location?: never
+          early_riser?: never
           full_name?: string | null
-          guest_preferences?: string | null
-          has_pets?: boolean | null
+          guest_preferences?: never
+          has_pets?: never
           hobbies?: string[] | null
           id?: string | null
           ideal_flatmate?: string | null
+          latitude?: never
+          longitude?: never
           move_in_date?: string | null
-          night_owl?: boolean | null
+          night_owl?: never
           occupation?: string | null
           profile_completed?: boolean | null
-          smoker?: boolean | null
+          show_budget?: boolean | null
+          show_habits?: boolean | null
+          show_location?: boolean | null
+          show_photos?: boolean | null
+          smoker?: never
           updated_at?: string | null
           user_id?: string | null
           wants_pets?: boolean | null
@@ -356,22 +386,28 @@ export type Database = {
           accommodation_type?: string | null
           age?: number | null
           bio?: string | null
-          budget?: number | null
-          cleanliness_level?: string | null
+          budget?: never
+          cleanliness_level?: never
           created_at?: string | null
-          desired_location?: string | null
-          early_riser?: boolean | null
+          desired_location?: never
+          early_riser?: never
           full_name?: string | null
-          guest_preferences?: string | null
-          has_pets?: boolean | null
+          guest_preferences?: never
+          has_pets?: never
           hobbies?: string[] | null
           id?: string | null
           ideal_flatmate?: string | null
+          latitude?: never
+          longitude?: never
           move_in_date?: string | null
-          night_owl?: boolean | null
+          night_owl?: never
           occupation?: string | null
           profile_completed?: boolean | null
-          smoker?: boolean | null
+          show_budget?: boolean | null
+          show_habits?: boolean | null
+          show_location?: boolean | null
+          show_photos?: boolean | null
+          smoker?: never
           updated_at?: string | null
           user_id?: string | null
           wants_pets?: boolean | null
