@@ -284,10 +284,10 @@ const BrowseMatch = () => {
     if (profile.show_budget !== false && profile.budget) tags.push(`${profile.budget}k HUF`);
     if (profile.show_location !== false && profile.desired_location) tags.push(profile.desired_location);
     if (profile.show_habits !== false) {
-      if (profile.smoker === false) tags.push("Non-Smoker");
-      if (profile.early_riser) tags.push("Early Riser");
-      if (profile.night_owl) tags.push("Night Owl");
-      if (profile.has_pets) tags.push("Pets OK");
+      if (profile.smoker === false) tags.push(t("tag.nonSmoker"));
+      if (profile.early_riser) tags.push(t("tag.earlyRiser"));
+      if (profile.night_owl) tags.push(t("tag.nightOwl"));
+      if (profile.has_pets) tags.push(t("tag.petsOk"));
     }
     if (profile.occupation) tags.push(profile.occupation);
     return tags.slice(0, 6);

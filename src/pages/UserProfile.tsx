@@ -368,7 +368,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
               />
             ) : (
               <p className="text-foreground font-body leading-relaxed">
-                {profile.bio || "No bio added yet."}
+                {profile.bio || t("tag.noBio")}
               </p>
             )}
           </div>
