@@ -266,4 +266,10 @@ export const pt: TranslationKeys = {
   "edit.ageRange": "Faixa Etária Preferida",
   "edit.uploadPhoto": "Enviar Foto",
   "edit.photoDesc": "Adicione uma foto para que outros te reconheçam",
+  "tag.nonSmoker": "Não Fumante",
+  "tag.earlyRiser": "Madrugador",
+  "tag.nightOwl": "Noturno",
+  "tag.petsOk": "Aceita Animais",
+  "tag.verified": "Verificado",
+  "tag.noBio": "Nenhuma bio adicionada ainda.",
 };

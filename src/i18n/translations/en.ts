@@ -278,4 +278,11 @@ export const en: TranslationKeys = {
   "edit.ageRange": "Preferred Age Range",
   "edit.uploadPhoto": "Upload Photo",
   "edit.photoDesc": "Add a photo to help others recognize you",
+  // Tags & labels
+  "tag.nonSmoker": "Non-Smoker",
+  "tag.earlyRiser": "Early Riser",
+  "tag.nightOwl": "Night Owl",
+  "tag.petsOk": "Pets OK",
+  "tag.verified": "Verified",
+  "tag.noBio": "No bio added yet.",
 };

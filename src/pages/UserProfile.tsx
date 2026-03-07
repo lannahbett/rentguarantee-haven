@@ -76,6 +76,7 @@ const UserProfile = () => {
   }, [activeProfileTab]);
 
   const checkAuthAndFetchProfile = async () => {
+    setLoading(true);
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       navigate("/auth");
@@ -239,7 +240,7 @@ const UserProfile = () => {
                   </h1>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-body font-semibold">
                     <CheckCircle size={12} />
-                    Verified
+                    {t("tag.verified")}
                   </span>
                 </div>
                 {profile.age && (
@@ -367,7 +368,7 @@ const ProfileViewContent = ({ profile, isOwnProfile, handleQuickSave, getCleanli
               />
             ) : (
               <p className="text-foreground font-body leading-relaxed">
-                {profile.bio || "No bio added yet."}
+                {profile.bio || t("tag.noBio")}
               </p>
             )}
           </div>

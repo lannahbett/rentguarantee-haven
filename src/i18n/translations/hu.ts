@@ -266,4 +266,10 @@ export const hu: TranslationKeys = {
   "edit.ageRange": "Preferált Korosztály",
   "edit.uploadPhoto": "Fotó Feltöltése",
   "edit.photoDesc": "Adj hozzá fotót, hogy mások felismerjenek",
+  "tag.nonSmoker": "Nem dohányzó",
+  "tag.earlyRiser": "Korán kelő",
+  "tag.nightOwl": "Éjjeli bagoly",
+  "tag.petsOk": "Háziállat OK",
+  "tag.verified": "Ellenőrzött",
+  "tag.noBio": "Még nincs bemutatkozás.",
 };
