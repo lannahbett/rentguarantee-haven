@@ -288,4 +288,11 @@ export type TranslationKeys = {
   "edit.ageRange": string;
   "edit.uploadPhoto": string;
   "edit.photoDesc": string;
+  // Tags & labels
+  "tag.nonSmoker": string;
+  "tag.earlyRiser": string;
+  "tag.nightOwl": string;
+  "tag.petsOk": string;
+  "tag.verified": string;
+  "tag.noBio": string;
 };
