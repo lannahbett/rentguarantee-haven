@@ -240,7 +240,7 @@ const UserProfile = () => {
                   </h1>
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-xs font-body font-semibold">
                     <CheckCircle size={12} />
-                    Verified
+                    {t("tag.verified")}
                   </span>
                 </div>
                 {profile.age && (
