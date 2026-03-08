@@ -5,6 +5,8 @@ import './index.css';
 import ErrorBoundary from './components/performance/ErrorBoundary';
 import { reportWebVitals } from './utils/performance';
 
+// App initialized
+
 // Make sure we have a DOM element to render to
 const rootElement = document.getElementById("root");
 
